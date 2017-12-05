@@ -22,9 +22,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="init.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Sugoroku.py" />
   </ItemGroup>
   <ItemGroup>
