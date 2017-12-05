@@ -1,0 +1,75 @@
+{
+    "author": "idk yet",
+    "date": "idk yet",
+    "dice": "idk yet",
+    "goal": "idk yet",
+    "key": "value",
+    "publisher": "idk yet",
+    "start": "idk yet",
+    "title": "idk yet",
+    "transitions": {
+        "A": {
+            "1": {
+                "target": "B"
+            },
+            "2": {
+                "target": "C"
+            },
+            "3": {
+                "target": "D"
+            },
+            "4": {
+                "target": "D"
+            },
+            "5": {
+                "target": "D"
+            },
+            "6": {
+                "target": "D"
+            }
+        },
+        "B": {
+            "1": {
+                "target": "C"
+            },
+            "2": {
+                "target": "D"
+            },
+            "3": {
+                "target": "D"
+            },
+            "4": {
+                "target": "D"
+            },
+            "5": {
+                "target": "D"
+            },
+            "6": {
+                "target": "D"
+            },
+            "rule": "rule placeholder"
+        },
+        "C": {
+            "1": {
+                "target": "D"
+            },
+            "2": {
+                "target": "D"
+            },
+            "3": {
+                "target": "D"
+            },
+            "4": {
+                "target": "D"
+            },
+            "5": {
+                "target": "D"
+            },
+            "6": {
+                "target": "D"
+            },
+            "rule": "rule placeholder"
+        },
+        "D": {}
+    }
+}
