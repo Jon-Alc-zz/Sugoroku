@@ -94,3 +94,8 @@ while P_red.get_position().get_id() is not "end":
         for i in range(abs(effect)):
             if P_red.get_position().get_backward() != None:
                 P_red.set_position(P_red.get_position().get_backward())
+                
+                
+                
+                
+                
