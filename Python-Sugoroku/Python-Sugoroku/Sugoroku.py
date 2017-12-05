@@ -135,7 +135,7 @@ while generation < 10:
                 if P_red.get_position().get_backward() != None:
                     P_red.set_position(P_red.get_position().get_backward())
                     
-    new_space = Space(random.randint(-2,2),random.randint(1,600)) # assigns new node with random big number ID
+    new_space = Space(([4, 5, 6], random.randint(1, 6), random.randint(-6, -1)), random.randint(1,600)) # assigns new node with random big number ID
     traveller = A.get_forward().get_forward() # makes sure it doesn't replace start
     randomfloat = random.random()
     while(randomfloat<.6): # has .6^n chance of going to next node
