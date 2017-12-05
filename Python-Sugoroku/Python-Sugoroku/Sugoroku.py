@@ -110,25 +110,43 @@ P_red.set_position(A)
 #
 # player movement
 #
-while P_red.get_position().get_id() is not "end":
+generation = 1
+while generation < 10:
+    while P_red.get_position().get_id() is not "end":
 
-    # Player rolls first
-    move = P_red.player_roll()
-    print("Player location: ", P_red.get_position().get_id())
-    print("Player rolls: ", move)
-    for i in range(move):
-        if P_red.get_position().get_forward() != None:
-            P_red.set_position(P_red.get_position().get_forward())
-    print("Player location: ", P_red.get_position().get_id())
-
-    # Space.traverse() is called
-    effect = P_red.get_position().traverse()
-    print("Location traverse: ", effect)
-    if effect > 0:
-        for i in range(effect):
+        # Player rolls first
+        move = P_red.player_roll()
+        print("Player location: ", P_red.get_position().get_id())
+        print("Player rolls: ", move)
+        for i in range(move):
             if P_red.get_position().get_forward() != None:
                 P_red.set_position(P_red.get_position().get_forward())
-    else:
-        for i in range(abs(effect)):
-            if P_red.get_position().get_backward() != None:
-                P_red.set_position(P_red.get_position().get_backward())
+        print("Player location: ", P_red.get_position().get_id())
+
+        # Space.traverse() is called
+        effect = P_red.get_position().traverse()
+        print("Location traverse: ", effect)
+        if effect > 0:
+            for i in range(effect):
+                if P_red.get_position().get_forward() != None:
+                    P_red.set_position(P_red.get_position().get_forward())
+        else:
+            for i in range(abs(effect)):
+                if P_red.get_position().get_backward() != None:
+                    P_red.set_position(P_red.get_position().get_backward())
+                    
+    new_space = Space(random.randint(-2,2),random.randint(1,600)) # assigns new node with random big number ID
+    traveller = A.get_forward().get_forward() # makes sure it doesn't replace start
+    randomfloat = random.random()
+    while(randomfloat<.6): # has .6^n chance of going to next node
+        traveller=traveller.get_forward()
+        randomfloat = random.random()
+                      
+    new_space.set_forward(traveller) # insertion done here
+    new_space.set_backward(traveller.get_backward())
+    traveller.set_backward(new_space)
+    traveller.get_backward().set_forward(new_space)
+
+    P_red.set_position(A) # player reset done ehre
+    print("\nGeneration: ", generation) 
+    generation+=1
