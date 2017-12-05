@@ -1,0 +1,223 @@
+{
+	"title": "Jon's amazing test file",
+	"author": "Jon",
+	"date": "2017",
+	"publisher": "Jon",
+	"dice": "1d6",
+	"start": "A",
+	"goal": "J",
+	"transitions": {
+		"A": {
+			"1": {
+				"target": "B"
+			},
+			"2": {
+				"target": "C"
+			},
+			"3": {
+				"target": "D"
+			},
+            "4": {
+				"target": "E"
+			},
+            "5": {
+				"target": "F"
+			},
+            "6": {
+				"target": "G"
+			},
+            "rule": "0",
+			"row": "1",
+			"column": "1"
+		},
+		"B": {
+			"1": {
+				"target": "C"
+			},
+			"2": {
+				"target": "D"
+			},
+			"3": {
+				"target": "E"
+			},
+            "4": {
+				"target": "F"
+			},
+            "5": {
+				"target": "G"
+			},
+            "6": {
+				"target": "H"
+			},
+            "rule": "1",
+			"row": "1",
+			"column": "2"
+		},
+		"C": {
+			"1": {
+				"target": "D"
+			},
+			"2": {
+				"target": "E"
+			},
+			"3": {
+				"target": "F"
+			},
+            "4": {
+				"target": "G"
+			},
+            "5": {
+				"target": "H"
+			},
+            "6": {
+				"target": "I"
+			},
+            "rule": "0",
+			"row": "1",
+			"column": "3"
+		},
+		"D": {
+			"1": {
+				"target": "E"
+			},
+			"2": {
+				"target": "F"
+			},
+			"3": {
+				"target": "G"
+			},
+            "4": {
+				"target": "H"
+			},
+            "5": {
+				"target": "I"
+			},
+            "6": {
+				"target": "J"
+			},
+            "rule": "0",
+			"row": "1",
+			"column": ["4", "5"]
+		},
+		"E": {
+			"1": {
+				"target": "F"
+			},
+			"2": {
+				"target": "G"
+			},
+			"3": {
+				"target": "H"
+			},
+            "4": {
+				"target": "I"
+			},
+            "5": {
+				"target": "J"
+			},
+            "6": {
+				"target": "J"
+			},
+            "rule": "-2",
+			"row": "1",
+			"column": "6"
+		},
+		"F": {
+			"1": {
+				"target": "G"
+			},
+			"2": {
+				"target": "H"
+			},
+			"3": {
+				"target": "I"
+			},
+            "4": {
+				"target": "J"
+			},
+            "5": {
+				"target": "J"
+			},
+            "6": {
+				"target": "J"
+			},
+            "rule": "0",
+			"row": "1",
+			"column": "7"
+		},
+		"G": {
+			"1": {
+				"target": "H"
+			},
+			"2": {
+				"target": "I"
+			},
+			"3": {
+				"target": "J"
+			},
+            "4": {
+				"target": "J"
+			},
+            "5": {
+				"target": "J"
+			},
+            "6": {
+				"target": "J"
+			},
+            "rule": "0",
+			"row": "1",
+			"column": "8"
+		},
+		"H": {
+			"1": {
+				"target": "I"
+			},
+			"2": {
+				"target": "J"
+			},
+			"3": {
+				"target": "J"
+			},
+            "4": {
+				"target": "J"
+			},
+            "5": {
+				"target": "J"
+			},
+            "6": {
+				"target": "J"
+			},
+            "rule": "0",
+			"row": "2",
+			"column": "1"
+		},
+		"I": {
+			"1": {
+				"target": "J"
+			},
+			"2": {
+				"target": "J"
+			},
+			"3": {
+				"target": "J"
+			},
+            "4": {
+				"target": "J"
+			},
+            "5": {
+				"target": "J"
+			},
+            "6": {
+				"target": "J"
+			},
+            "rule": "-3",
+			"row": "2",
+			"column": "2"
+		},
+		"J": {
+            "rule": "0",
+			"row": "2",
+			"column": "3"
+		}
+	}
+}
