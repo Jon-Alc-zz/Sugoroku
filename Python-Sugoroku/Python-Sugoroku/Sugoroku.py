@@ -10,6 +10,7 @@ Ruihong Yu
 Currently a very basic implementation demonstrating the main idea of Sugoroku.
 """
 import random
+import copy
 
 # Space is a place on the board that a Player can land on.
 class Space:
@@ -53,6 +54,7 @@ class Space:
     # used to check for "start" and "end"
     def get_id(self):
         return self.id
+        
 
 class Board:
 
@@ -110,8 +112,34 @@ class Board:
         string+=node.get_id()
         print("")
         print(string)
+
+    def generate_children(self, other):
+        parent1 = copy.deepcopy(self)
+        parent2 = copy.deepcopy(other)
+        point1 = random.randint(3, self.get_length()-1)
+        point2 = random.randint(3, other.get_length()-1)
+
+        traveller1 = parent1.get_head()
+        traveller2 = parent2.get_head()
+
+        for i in range(1, point1 - 1):
+            traveller1=traveller1.get_forward()
+        for j in range(1, point2 - 1):
+            traveller2=traveller2.get_forward()
+
+        temp1 = copy.deepcopy(traveller1)
+        temp2 = copy.deepcopy(traveller2)
         
-    
+        traveller1.get_backward().set_forward(traveller2)
+        traveller2.get_backward().set_forward(traveller1)
+        traveller1.set_backward(temp2.get_backward())
+        traveller2.set_backward(temp1.get_backward())
+
+        parent1.update_length()
+        parent2.update_length()
+        
+        return (parent1, parent2)
+        
         
 
 # Player is a pointer that navigates through Spaces until it hits the "end" Space.
@@ -170,10 +198,12 @@ game_board.insert(I,1)
 game_board.insert(H,1)
 game_board.insert(G,1)
 game_board.insert(F,1)
-game_board.insert(E,1)
-game_board.insert(D,1)
-game_board.insert(C,1)
-game_board.insert(B,1)
+
+game_board2 = Board()
+game_board2.insert(E,1)
+game_board2.insert(D,1)
+game_board2.insert(C,1)
+game_board2.insert(B,1)
 
 P_red = Player("Red") # ---------- Players ----------
 P_red.set_position(game_board.get_head()) 
@@ -184,7 +214,7 @@ P_red.set_position(game_board.get_head())
 generation = 1
 while generation < 10:
     while P_red.get_position().get_id() is not "end":
-
+    
         # Player rolls first
         move = P_red.player_roll()
         print("Player location: ", P_red.get_position().get_id())
@@ -208,15 +238,21 @@ while generation < 10:
                     P_red.set_position(P_red.get_position().get_backward())
                     
     new_space = Space(([4, 5, 6], random.randint(1, 6), random.randint(-6, -1)), random.randint(1,600)) # assigns new node with random big number ID
+    new_space2 = Space(([4, 5, 6], random.randint(1, 6), random.randint(-6, -1)), random.randint(1,600)) # assigns new node with random big number ID
                       
     """new_space.set_forward(traveller) # insertion done here
     new_space.set_backward(traveller.get_backward())
     traveller.set_backward(new_space)
     traveller.get_backward().set_forward(new_space)"""
     game_board.insert(new_space, random.randint(1, game_board.get_length()-1))
+    game_board2.insert(new_space2, random.randint(1, game_board2.get_length()-1))
 
     P_red.set_position(game_board.get_head()) # player reset done here
     print("\nGeneration: ", generation) 
     generation+=1
 
 game_board.to_string()
+game_board2.to_string()
+child = game_board.generate_children(game_board2)
+child[0].to_string()
+child[1].to_string()
