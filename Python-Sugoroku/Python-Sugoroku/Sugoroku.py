@@ -55,9 +55,20 @@ class Space:
     def get_id(self):
         return self.id
 
+    #changes current node's id
     def set_id(self, new_id):
         self.id = new_id
-        
+    
+    #print the node
+    def prin(self):
+        print("----id----")
+        print("id [",self.id,"]")
+        if self.id != "start":
+            print("from", self.backward.get_id())
+        if self.id != "end":
+            print("to", self.forward.get_id())
+        if isinstance(self.traverse_params, tuple):
+            print("traverse", self.traverse_params)
 
 class Board:
 
@@ -116,6 +127,7 @@ class Board:
         print("")
         print(string)
 
+    #reassigns ids in ascending numerical order
     def reassign_id(self):
          node = self.get_head()
          node=node.get_forward()
@@ -153,6 +165,14 @@ class Board:
         parent2.update_length()
         
         return (parent1, parent2)
+
+    def to_list(self):
+        node = self.get_head()
+        board_list = []
+        while node.get_id() is not "end":
+            board_list.append(node)
+            node=node.get_forward()
+        return board_list
         
         
 
@@ -185,92 +205,93 @@ class Player:
 #
 # Give a tuple if you need to roll for an effect
 # ([list of successful numbers], spaces to jump on success, spaces to jump on fail)
+def main():
+    A = Space(0, "start") # ---------- Spaces ----------
+    B = Space(([1, 3, 5], 1, -1), "B")
+    C = Space(0, "C")
+    D = Space(0, "D")
+    E = Space(([4, 5, 6], 0, -2), "E")
+    F = Space(0, "F")
+    G = Space(([1, 3, 5], 1, 0), "G")
+    H = Space(0, "H")
+    I = Space(([1, 2, 5, 6], 0, -3), "I")
+    J = Space(0, "end")
+    A.set_forward(B) # ---------- Connections ----------
+    B.set_backward(A); B.set_forward(C)
+    C.set_backward(B); C.set_forward(D)
+    D.set_backward(C); D.set_forward(E)
+    E.set_backward(D); E.set_forward(F)
+    F.set_backward(E); F.set_forward(G)
+    G.set_backward(F); G.set_forward(H)
+    H.set_backward(G); H.set_forward(I)
+    I.set_backward(H); I.set_forward(J)
+    J.set_backward(I)
 
-A = Space(0, "start") # ---------- Spaces ----------
-B = Space(([1, 3, 5], 1, -1), "B")
-C = Space(0, "C")
-D = Space(0, "D")
-E = Space(([4, 5, 6], 0, -2), "E")
-F = Space(0, "F")
-G = Space(([1, 3, 5], 1, 0), "G")
-H = Space(0, "H")
-I = Space(([1, 2, 5, 6], 0, -3), "I")
-J = Space(0, "end")
-A.set_forward(B) # ---------- Connections ----------
-B.set_backward(A); B.set_forward(C)
-C.set_backward(B); C.set_forward(D)
-D.set_backward(C); D.set_forward(E)
-E.set_backward(D); E.set_forward(F)
-F.set_backward(E); F.set_forward(G)
-G.set_backward(F); G.set_forward(H)
-H.set_backward(G); H.set_forward(I)
-I.set_backward(H); I.set_forward(J)
-J.set_backward(I)
+    game_board = Board()
+    game_board.insert(I,1)
+    game_board.insert(H,1)
+    game_board.insert(G,1)
+    game_board.insert(F,1)
 
-game_board = Board()
-game_board.insert(I,1)
-game_board.insert(H,1)
-game_board.insert(G,1)
-game_board.insert(F,1)
+    game_board2 = Board()
+    game_board2.insert(E,1)
+    game_board2.insert(D,1)
+    game_board2.insert(C,1)
+    game_board2.insert(B,1)
 
-game_board2 = Board()
-game_board2.insert(E,1)
-game_board2.insert(D,1)
-game_board2.insert(C,1)
-game_board2.insert(B,1)
+    P_red = Player("Red") # ---------- Players ----------
+    P_red.set_position(game_board.get_head()) 
 
-P_red = Player("Red") # ---------- Players ----------
-P_red.set_position(game_board.get_head()) 
-
-#
-# player movement
-#
-generation = 1
-while generation < 10:
-    while P_red.get_position().get_id() is not "end":
-    
-        # Player rolls first
-        move = P_red.player_roll()
-        print("Player location: ", P_red.get_position().get_id())
-        print("Player rolls: ", move)
-        for i in range(move):
-            if P_red.get_position().get_forward() != None:
-                P_red.set_position(P_red.get_position().get_forward())
-
-        print("Player location: ", P_red.get_position().get_id())
-
-        # Space.traverse() is called
-        effect = P_red.get_position().traverse()
-        print("Location traverse: ", effect)
-        if effect > 0:
-            for i in range(effect):
+    #
+    # player movement
+    #
+    generation = 1
+    while generation < 10:
+        while P_red.get_position().get_id() is not "end":
+        
+            # Player rolls first
+            move = P_red.player_roll()
+            print("Player location: ", P_red.get_position().get_id())
+            print("Player rolls: ", move)
+            for i in range(move):
                 if P_red.get_position().get_forward() != None:
                     P_red.set_position(P_red.get_position().get_forward())
-        else:
-            for i in range(abs(effect)):
-                if P_red.get_position().get_backward() != None:
-                    P_red.set_position(P_red.get_position().get_backward())
-                    
-    new_space = Space(([4, 5, 6], random.randint(1, 6), random.randint(-6, -1)), random.randint(1,600)) # assigns new node with random big number ID
-    new_space2 = Space(([4, 5, 6], random.randint(1, 6), random.randint(-6, -1)), random.randint(1,600)) # assigns new node with random big number ID
-                      
-    """new_space.set_forward(traveller) # insertion done here
-    new_space.set_backward(traveller.get_backward())
-    traveller.set_backward(new_space)
-    traveller.get_backward().set_forward(new_space)"""
-    game_board.insert(new_space, random.randint(1, game_board.get_length()-1))
-    game_board2.insert(new_space2, random.randint(1, game_board2.get_length()-1))
+            print("Player location: ", P_red.get_position().get_id())
 
-    P_red.set_position(game_board.get_head()) # player reset done here
-    print("\nGeneration: ", generation) 
-    generation+=1
+            # Space.traverse() is called
+            effect = P_red.get_position().traverse()
+            print("Location traverse: ", effect)
+            if effect > 0:
+                for i in range(effect):
+                    if P_red.get_position().get_forward() != None:
+                        P_red.set_position(P_red.get_position().get_forward())
+            else:
+                for i in range(abs(effect)):
+                    if P_red.get_position().get_backward() != None:
+                        P_red.set_position(P_red.get_position().get_backward())
+                        
+        new_space = Space(([4, 5, 6], random.randint(1, 6), random.randint(-6, -1)), random.randint(1,600)) # assigns new node with random big number ID
+        new_space2 = Space(([4, 5, 6], random.randint(1, 6), random.randint(-6, -1)), random.randint(1,600)) # assigns new node with random big number ID
+                          
+        """new_space.set_forward(traveller) # insertion done here
+        new_space.set_backward(traveller.get_backward())
+        traveller.set_backward(new_space)
+        traveller.get_backward().set_forward(new_space)"""
+        game_board.insert(new_space, random.randint(1, game_board.get_length()-1))
+        game_board2.insert(new_space2, random.randint(1, game_board2.get_length()-1))
 
-game_board.to_string()
-game_board2.to_string()
-child = game_board.generate_children(game_board2)
-child[0].reassign_id()
-child[1].reassign_id()
-child[0].to_string()
-print(child[0].get_length())
-print(child[1].get_length())
-child[1].to_string()
+        P_red.set_position(game_board.get_head()) # player reset done here
+        print("\nGeneration: ", generation) 
+        generation+=1
+
+    game_board.to_string()
+    game_board2.to_string()
+    child = game_board.generate_children(game_board2)
+    child[0].reassign_id()
+    child[1].reassign_id()
+    child[0].to_string()
+    child[1].to_string()
+    return child[0]
+
+if __name__ == "__main__":
+    main()
