@@ -60,22 +60,26 @@ class Board:
     def __init__(self):
         self.length = 3
         self.head = Space(0, "start")
-        middle_space = Space(0,"second_last")
+        middle_space = Space(0,"middle")
         self.tail = Space(0, "end")
         self.head.set_forward(middle_space)
         middle_space.set_backward(self.head)
         middle_space.set_forward(self.tail)
         self.tail.set_backward(middle_space)
 
+    #returns the length
     def get_length(self):
         return self.length
 
+    #returns the head(start)
     def get_head(self):
         return self.head
 
+    #returns the tail(end)
     def get_tail(self):
         return self.tail
 
+    #updates the length because it might be changed during reproduction
     def update_length(self):
         temp_length = 1
         traveller = self.head
@@ -84,6 +88,7 @@ class Board:
             temp_length+=1
         self.length = temp_length
 
+    #inserts a given node in a location with 1<location<length-1
     def insert(self, given_space, insert_location):
         traveller=self.head
         for i in range(0, insert_location):
@@ -93,7 +98,20 @@ class Board:
         traveller.get_backward().set_forward(given_space)
         traveller.set_backward(given_space)
         self.length+=1
+
+    #prints a string representation of the board in console
+    def to_string(self):
+        node = self.get_head()
+        string = ""
+        while node.get_id() is not "end":
+            string+= str(node.get_id())
+            string+= "-->"
+            node=node.get_forward()
+        string+=node.get_id()
+        print("")
+        print(string)
         
+    
         
 
 # Player is a pointer that navigates through Spaces until it hits the "end" Space.
@@ -190,18 +208,15 @@ while generation < 10:
                     P_red.set_position(P_red.get_position().get_backward())
                     
     new_space = Space(([4, 5, 6], random.randint(1, 6), random.randint(-6, -1)), random.randint(1,600)) # assigns new node with random big number ID
-    traveller = A.get_forward().get_forward() # makes sure it doesn't replace start
-    randomfloat = random.random()
-    while(randomfloat<.6): # has .6^n chance of going to next node
-        traveller=traveller.get_forward()
-        randomfloat = random.random()
                       
     """new_space.set_forward(traveller) # insertion done here
     new_space.set_backward(traveller.get_backward())
     traveller.set_backward(new_space)
     traveller.get_backward().set_forward(new_space)"""
-    game_board.insert(new_space,2)
+    game_board.insert(new_space, random.randint(1, game_board.get_length()-1))
 
     P_red.set_position(game_board.get_head()) # player reset done here
     print("\nGeneration: ", generation) 
     generation+=1
+
+game_board.to_string()
