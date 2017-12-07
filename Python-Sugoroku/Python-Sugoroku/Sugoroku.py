@@ -54,6 +54,9 @@ class Space:
     # used to check for "start" and "end"
     def get_id(self):
         return self.id
+
+    def set_id(self, new_id):
+        self.id = new_id
         
 
 class Board:
@@ -113,6 +116,17 @@ class Board:
         print("")
         print(string)
 
+    def reassign_id(self):
+         node = self.get_head()
+         node=node.get_forward()
+         new_id_count = 1
+         while node.get_id() is not "end":
+             node.set_id(str(new_id_count))
+             new_id_count+=1
+             node=node.get_forward()
+
+    #uses variable-point crossover, can change later
+    #returns two children of varying length, so we don't end up getting same size boards over and over
     def generate_children(self, other):
         parent1 = copy.deepcopy(self)
         parent2 = copy.deepcopy(other)
@@ -122,7 +136,7 @@ class Board:
         traveller1 = parent1.get_head()
         traveller2 = parent2.get_head()
 
-        for i in range(1, point1 - 1):
+        for i in range(1, point1 - 1): #chooses two random points for crossover
             traveller1=traveller1.get_forward()
         for j in range(1, point2 - 1):
             traveller2=traveller2.get_forward()
@@ -135,7 +149,7 @@ class Board:
         traveller1.set_backward(temp2.get_backward())
         traveller2.set_backward(temp1.get_backward())
 
-        parent1.update_length()
+        parent1.update_length() #renews the length
         parent2.update_length()
         
         return (parent1, parent2)
@@ -254,5 +268,9 @@ while generation < 10:
 game_board.to_string()
 game_board2.to_string()
 child = game_board.generate_children(game_board2)
+child[0].reassign_id()
+child[1].reassign_id()
 child[0].to_string()
+print(child[0].get_length())
+print(child[1].get_length())
 child[1].to_string()
