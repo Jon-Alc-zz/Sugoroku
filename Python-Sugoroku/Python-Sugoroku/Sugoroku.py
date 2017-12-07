@@ -54,6 +54,48 @@ class Space:
     def get_id(self):
         return self.id
 
+class Board:
+
+    #initialization
+    def __init__(self):
+        self.length = 3
+        self.head = Space(0, "start")
+        middle_space = Space(0,"second_last")
+        self.tail = Space(0, "end")
+        self.head.set_forward(middle_space)
+        middle_space.set_backward(self.head)
+        middle_space.set_forward(self.tail)
+        self.tail.set_backward(middle_space)
+
+    def get_length(self):
+        return self.length
+
+    def get_head(self):
+        return self.head
+
+    def get_tail(self):
+        return self.tail
+
+    def update_length(self):
+        temp_length = 1
+        traveller = self.head
+        while traveller.get_id() is not "end":
+            traveller = traveller.get_forward()
+            temp_length+=1
+        self.length = temp_length
+
+    def insert(self, given_space, insert_location):
+        traveller=self.head
+        for i in range(0, insert_location):
+            traveller=traveller.get_forward()
+        given_space.set_backward(traveller.get_backward())
+        given_space.set_forward(traveller)
+        traveller.get_backward().set_forward(given_space)
+        traveller.set_backward(given_space)
+        self.length+=1
+        
+        
+
 # Player is a pointer that navigates through Spaces until it hits the "end" Space.
 class Player:
     
@@ -104,8 +146,19 @@ G.set_backward(F); G.set_forward(H)
 H.set_backward(G); H.set_forward(I)
 I.set_backward(H); I.set_forward(J)
 J.set_backward(I)
+
+game_board = Board()
+game_board.insert(I,1)
+game_board.insert(H,1)
+game_board.insert(G,1)
+game_board.insert(F,1)
+game_board.insert(E,1)
+game_board.insert(D,1)
+game_board.insert(C,1)
+game_board.insert(B,1)
+
 P_red = Player("Red") # ---------- Players ----------
-P_red.set_position(A) 
+P_red.set_position(game_board.get_head()) 
 
 #
 # player movement
@@ -143,11 +196,12 @@ while generation < 10:
         traveller=traveller.get_forward()
         randomfloat = random.random()
                       
-    new_space.set_forward(traveller) # insertion done here
+    """new_space.set_forward(traveller) # insertion done here
     new_space.set_backward(traveller.get_backward())
     traveller.set_backward(new_space)
-    traveller.get_backward().set_forward(new_space)
+    traveller.get_backward().set_forward(new_space)"""
+    game_board.insert(new_space,2)
 
-    P_red.set_position(A) # player reset done ehre
+    P_red.set_position(game_board.get_head()) # player reset done here
     print("\nGeneration: ", generation) 
     generation+=1
