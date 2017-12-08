@@ -20,7 +20,6 @@ class JSONParser extends React.Component{
         	if (xmlHttp.readyState == 4){
         		var XMLResponse = JSON.parse(xmlHttp.responseText);
         		if(xmlHttp.status == 200){
-        			console.log(XMLResponse);
         			this.setState({
         				title: XMLResponse.title,
         				author: XMLResponse.author,
@@ -35,11 +34,8 @@ class JSONParser extends React.Component{
         				this.setState({
         					spaceKeys: tempKeys
         				}, ()=>{
-        					console.log(this.state.title);
-        					console.log("Created by " + this.state.author);
-        					console.log("Use " + this.state.dice + " to play");
-
-        					console.log(this.state.spaceKeys);
+        					this.props.setJSONFile(XMLResponse);
+        					this.props.setSpaceKeys(this.state.spaceKeys);
         				});
         			});
 
