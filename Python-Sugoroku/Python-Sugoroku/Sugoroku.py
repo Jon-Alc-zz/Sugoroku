@@ -60,7 +60,7 @@ class Space:
         self.id = new_id
     
     #print the node
-    def prin(self):
+    def debug_print(self):
         print("----id----")
         print("id [",self.id,"]")
         if self.id != "start":
@@ -178,7 +178,7 @@ class Board:
             board_list.append(node)
             node=node.get_forward()
         return board_list
-        
+
         
 
 # Player is a pointer that navigates through Spaces until it hits the "end" Space.
@@ -201,6 +201,12 @@ class Player:
     def player_roll(self):
         return random.randrange(1, 7)
 
+    # move Player based on board type and their roll
+    def move(self, roll, board_type):
+        if board_type == "normal":
+            for i in range(roll):
+                if self.get_position().get_forward() != None:
+                    self.set_position(self.get_position().get_forward())
 #
 # main is here
 #
@@ -255,12 +261,10 @@ def main():
         while P_red.get_position().get_id() is not "end":
         
             # Player rolls first
-            move = P_red.player_roll()
+            roll = P_red.player_roll()
             print("Player location: ", P_red.get_position().get_id())
-            print("Player rolls: ", move)
-            for i in range(move):
-                if P_red.get_position().get_forward() != None:
-                    P_red.set_position(P_red.get_position().get_forward())
+            print("Player rolls: ", roll)
+            P_red.move(roll, game_board.get_board_id())
             print("Player location: ", P_red.get_position().get_id())
 
             # Space.traverse() is called

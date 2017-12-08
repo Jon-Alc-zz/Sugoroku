@@ -37,7 +37,7 @@ def main():
     spaces = game_board.to_list()
     #print(Sugoroku.send_board_list())
     #for thing in spaces:
-    #    thing.prin()
+    #    thing.debug_print()
     #print("finished printing")
     # and the list of spaces each space leads to depending on the dice roll
     data['transitions'] = {}
