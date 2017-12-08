@@ -200,7 +200,7 @@ class Board:
                 if random.random() < (deviation * .3):
                     self.insert(Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)),random.randint(1, self.get_length()-1))
             if random.random() < .2:
-                self.insert(Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)),random.randint(1, self.get_length()-1))
+                self.insert(Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)), random.randint(1, self.get_length()-1))
         
 
 # Player is a pointer that navigates through Spaces until it hits the "end" Space.
@@ -273,7 +273,7 @@ def main():
     # player movement
     #
     generation = 1
-    while generation < 40:
+    while generation < 100:
         while P_red.get_position().get_id() is not "end":
         
             # Player rolls first
