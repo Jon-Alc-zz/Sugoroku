@@ -55,12 +55,12 @@ class Space:
     def get_id(self):
         return self.id
 
-    #changes current node's id
+    # changes current node's id
     def set_id(self, new_id):
         self.id = new_id
     
-    #print the node
-    def prin(self):
+    # print the node
+    def debug_print(self):
         print("----id----")
         print("id [",self.id,"]")
         if self.id != "start":
@@ -72,7 +72,7 @@ class Space:
 
 class Board:
 
-    #initialization
+    # initialization
     def __init__(self, board_id="normal"):
         self.length = 3
         self.head = Space(0, "start")
@@ -84,19 +84,19 @@ class Board:
         self.tail.set_backward(middle_space)
         self.id = board_id
 
-    #returns the length
+    # returns the length
     def get_length(self):
         return self.length
 
-    #returns the head(start)
+    # returns the head(start)
     def get_head(self):
         return self.head
 
-    #returns the tail(end)
+    # returns the tail(end)
     def get_tail(self):
         return self.tail
 
-    #updates the length because it might be changed during reproduction
+    # updates the length because it might be changed during reproduction
     def update_length(self):
         temp_length = 1
         traveller = self.head
@@ -105,7 +105,7 @@ class Board:
             temp_length+=1
         self.length = temp_length
 
-    #inserts a given node in a location with 1<location<length-1
+    # inserts a given node in a location where 1 < location < length - 1
     def insert(self, given_space, insert_location):
         traveller=self.head
         for i in range(0, insert_location):
@@ -127,7 +127,7 @@ class Board:
         self.length-=1
         
 
-    #prints a string representation of the board in console
+    # prints a string representation of the board in console
     def to_string(self):
         node = self.get_head()
         string = ""
@@ -222,6 +222,97 @@ class Player:
     # returns a number from 1-6, used for movement
     def player_roll(self):
         return random.randrange(1, 7)
+ 
+    # move Player based on board type and their roll
+    def move(self, roll, board_type):   
+        if board_type == "normal":
+            for i in range(roll):
+                if self.get_position().get_forward() != None:
+                    self.set_position(self.get_position().get_forward())
+
+        # this board type models Demon Island's Cave maze
+        if board_type == "maze":
+
+            current_space_id = self.get_position().get_id()
+
+            tag = "" # used for jumping to a specific space
+            roll_normally = False # is the die's value used normally?
+
+            # Meant to simulate stopping at the maze entrance,
+            # -----------------------------------------------------
+            if current_space_id == "start":
+                self.set_position(self.get_position().get_forward())
+            # -----------------------------------------------------
+
+            elif current_space_id == "maze_zero": # entrance: roll to decide which tile you move to
+                roll_normally = True
+
+            elif current_space_id == "maze_one": # one: even = maze_four, odd = exit
+
+                if roll % 2 == 0:
+                    tag = "maze_four"
+                else:
+                    tag = "maze_end"
+
+            elif current_space_id == "maze_two": # two: roll and move to that maze tile
+                
+                tag = "maze_zero"
+                roll_normally = True
+
+            elif current_space_id == "maze_three": # three: exit (2, 5), 2 (anything else)
+
+                if roll == 2 or roll == 5:
+                    tag = "maze_end"
+                else:
+                    tag = "maze_two"
+
+            elif current_space_id == "maze_four": # four: any other tile (1-3, 5-6) or start (4)
+
+                if roll == 4: # roll 4 sends to start
+                    tag = "start"
+                else:
+                    tag = "maze_zero"
+                    roll_normally = True
+
+            elif current_space_id == "maze_five": # adapting five, since combat doesn't exist: 5 exits, anything else stays
+
+                if roll == 5:
+                    tag = "maze_end"
+
+            elif current_space_id == "maze_six": # six: exit or itself, must roll at least 10 with 3 rolls
+
+                roll_two = self.player_roll()
+                roll_three = self.player_roll()
+                print("Rolls 2 and 3: ", roll_two, roll_three)
+                if roll + roll_two + roll_three >= 10:
+                    tag = "maze_end"
+
+            else: # outside of the maze
+                roll_normally = True
+
+            # done with tiles, movement happens below
+
+            if tag != "":
+
+                    # search forward
+                    while self.get_position().get_id() != tag:
+                        if self.get_position().get_forward() != None:
+                            self.set_position(self.get_position().get_forward())
+                        else:
+                            break
+
+                    # if not in forward, check backward
+                    if self.get_position().get_id() != tag:
+                        while self.get_position().get_id() != tag:
+                            if self.get_position().get_backward() != None:
+                                self.set_position(self.get_position().get_backward())
+                            else:
+                                break
+
+            if roll_normally:
+                for i in range(roll):
+                        if self.get_position().get_forward() != None:
+                            self.set_position(self.get_position().get_forward())
 
 #
 # main is here
@@ -243,32 +334,40 @@ def main():
     H = Space(0, "H")
     I = Space(([1, 2, 5, 6], 0, -3), "I")
     J = Space(0, "end")
-    A.set_forward(B) # ---------- Connections ----------
-    B.set_backward(A); B.set_forward(C)
-    C.set_backward(B); C.set_forward(D)
-    D.set_backward(C); D.set_forward(E)
-    E.set_backward(D); E.set_forward(F)
-    F.set_backward(E); F.set_forward(G)
-    G.set_backward(F); G.set_forward(H)
-    H.set_backward(G); H.set_forward(I)
-    I.set_backward(H); I.set_forward(J)
-    J.set_backward(I)
 
-    game_board = Board("normal")
-    game_board.insert(I,1)
-    game_board.insert(H,1)
-    game_board.insert(G,1)
-    game_board.insert(F,1)
+    before_cave = Space(0, "maze_zero")
+    cave_one = Space(0, "maze_one")
+    cave_two = Space(0, "maze_two")
+    cave_three = Space(0, "maze_three")
+    cave_four = Space(0, "maze_four")
+    cave_five = Space(0, "maze_five")
+    cave_six = Space(0, "maze_six")
+    after_cave = Space(0, "maze_end")
 
-    game_board2 = Board("normal")
-    game_board2.insert(E,1)
-    game_board2.insert(D,1)
-    game_board2.insert(C,1)
-    game_board2.insert(B,1)
+    game_board = Board("maze")
+    game_board.insert(after_cave, 1)
+    game_board.insert(cave_six, 1)
+    game_board.insert(cave_five, 1)
+    game_board.insert(cave_four, 1)
+    game_board.insert(cave_three, 1)
+    game_board.insert(cave_two, 1)
+    game_board.insert(cave_one, 1)
+    game_board.insert(before_cave, 1)
 
     P_red = Player("Red") # ---------- Players ----------
     P_red.set_position(game_board.get_head()) 
 
+    while (P_red.get_position()).get_id() is not "end":
+        
+        # Player rolls first
+        roll = P_red.player_roll()
+        print("Player location: ", P_red.get_position().get_id())
+        print("Player rolls: ", roll)
+        P_red.move(roll, game_board.get_board_id())
+
+    game_board.to_string()
+
+    """
     #
     # player movement
     #
@@ -300,10 +399,15 @@ def main():
         new_space = Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)) # assigns new node with random big number ID
         new_space2 = Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)) # assigns new node with random big number ID
                           
-        """new_space.set_forward(traveller) # insertion done here
+        ###new_space.set_forward(traveller) # insertion done here
         new_space.set_backward(traveller.get_backward())
         traveller.set_backward(new_space)
-        traveller.get_backward().set_forward(new_space)"""
+        traveller.get_backward().set_forward(new_space)###
+
+        game_board.insert(new_space, random.randint(1, game_board.get_length()-1))
+        game_board2.insert(new_space2, random.randint(1, game_board2.get_length()-1))
+
+        traveller.get_backward().set_forward(new_space)
         game_board.mutate()
         game_board2.mutate()
         P_red.set_position(game_board.get_head()) # player reset done here
@@ -317,9 +421,10 @@ def main():
     child = game_board.generate_children(game_board2)
     child[0].reassign_id()
     child[1].reassign_id()
-    """child[0].to_string()
-    child[1].to_string()"""
+    child[0].to_string()
+    child[1].to_string()
     return child[0]
+    """
 
 if __name__ == "__main__":
     main()

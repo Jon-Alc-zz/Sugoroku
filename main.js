@@ -1,3 +1,10 @@
+var {Router,
+	Route,
+	IndexRoute,
+	IndexLink,
+	hashHistory,
+	Link} = ReactRouter;
+
 class Main extends React.Component{
 	constructor(props){
 		super(props);
@@ -5,12 +12,21 @@ class Main extends React.Component{
 
 	render(){
 		return(
-			<JSONParser />
+			<div>
+				<Navbar />
+				{this.props.children}
+			</div>
 		);
 	}
 }
 
 ReactDOM.render(
-	<Main />,
+	<Router history={ReactRouter.hashHistory}>
+		<Route path="/" component={Main}>
+			<IndexRoute component={SugorokuHome}/>
+			<Route path="history" component={SugorokuHistory}/>
+			<Route path="about" component={AboutUs}/>
+		</Route>
+	</Router>,
 	document.getElementById("container")
 );
