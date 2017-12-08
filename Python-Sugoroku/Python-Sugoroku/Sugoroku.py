@@ -73,7 +73,7 @@ class Space:
 class Board:
 
     #initialization
-    def __init__(self):
+    def __init__(self, board_id="normal"):
         self.length = 3
         self.head = Space(0, "start")
         middle_space = Space(0,"middle")
@@ -82,6 +82,7 @@ class Board:
         middle_space.set_backward(self.head)
         middle_space.set_forward(self.tail)
         self.tail.set_backward(middle_space)
+        self.id = board_id
 
     #returns the length
     def get_length(self):
@@ -126,6 +127,10 @@ class Board:
         string+=node.get_id()
         print("")
         print(string)
+
+    #returns the board id
+    def get_board_id(self):
+        return self.id
 
     #reassigns ids in ascending numerical order
     def reassign_id(self):
@@ -227,13 +232,13 @@ def main():
     I.set_backward(H); I.set_forward(J)
     J.set_backward(I)
 
-    game_board = Board()
+    game_board = Board("normal")
     game_board.insert(I,1)
     game_board.insert(H,1)
     game_board.insert(G,1)
     game_board.insert(F,1)
 
-    game_board2 = Board()
+    game_board2 = Board("normal")
     game_board2.insert(E,1)
     game_board2.insert(D,1)
     game_board2.insert(C,1)
