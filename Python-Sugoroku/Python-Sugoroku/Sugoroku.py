@@ -366,6 +366,8 @@ def main():
         P_red.move(roll, game_board.get_board_id())
 
     game_board.to_string()
+    
+    return game_board
 
     """
     #
