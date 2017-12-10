@@ -551,64 +551,10 @@ def main():
         print("Player rolls: ", roll)
         P_red.move(roll, P_red.get_position().get_board_id())
 
-    """
-    #
-    # player movement
-    #
-    generation = 1
-    while generation < 100:
-        while P_red.get_position().get_id() is not "end":
-        
-            # Player rolls first
-            move = P_red.player_roll()
-            print("Player location: ", P_red.get_position().get_id())
-            print("Player rolls: ", move)
-            for i in range(move):
-                if P_red.get_position().get_forward() != None:
-                    P_red.set_position(P_red.get_position().get_forward())
-            print("Player location: ", P_red.get_position().get_id())
 
-            # Space.traverse() is called
-            effect = P_red.get_position().traverse()
-            print("Location traverse: ", effect)
-            if effect > 0:
-                for i in range(effect):
-                    if P_red.get_position().get_forward() != None:
-                        P_red.set_position(P_red.get_position().get_forward())
-            else:
-                for i in range(abs(effect)):
-                    if P_red.get_position().get_backward() != None:
-                        P_red.set_position(P_red.get_position().get_backward())
-                        
-        new_space = Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)) # assigns new node with random big number ID
-        new_space2 = Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)) # assigns new node with random big number ID
-                          
-        ###new_space.set_forward(traveller) # insertion done here
-        new_space.set_backward(traveller.get_backward())
-        traveller.set_backward(new_space)
-        traveller.get_backward().set_forward(new_space)###
-
-        game_board.insert(new_space, random.randint(1, game_board.get_length()-1))
-        game_board2.insert(new_space2, random.randint(1, game_board2.get_length()-1))
-
-        traveller.get_backward().set_forward(new_space)
-        game_board.mutate()
-        game_board2.mutate()
-        P_red.set_position(game_board.get_head()) # player reset done here
-        print("\nGeneration: ", generation) 
-        generation+=1
-
-    game_board.reassign_id()
-    game_board2.reassign_id()
     game_board.to_string()
-    game_board2.to_string()
-    child = game_board.generate_children(game_board2)
-    child[0].reassign_id()
-    child[1].reassign_id()
-    child[0].to_string()
-    child[1].to_string()
-    return child[0]
-    """
+    
+    return game_board
 
 if __name__ == "__main__":
     main()
