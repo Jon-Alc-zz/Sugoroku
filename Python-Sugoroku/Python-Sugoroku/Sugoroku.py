@@ -16,11 +16,12 @@ import copy
 class Space:
     
     # initialization
-    def __init__(self, given_traverse_params=0, given_id=""):
+    def __init__(self, given_traverse_params=0, given_id="", given_board_id="normal"):
         self.backward = None
         self.forward = None
         self.traverse_params = given_traverse_params
         self.id = given_id
+        self.board_id = given_board_id
 
     # links this Space ahead of a given one
     def set_backward(self, given_space):
@@ -58,6 +59,13 @@ class Space:
     # changes current node's id
     def set_id(self, new_id):
         self.id = new_id
+
+    #returns the board it's currently a part of
+    def get_board_id(self):
+        return self.board_id
+
+    def set_board_id(self, new_board_id):
+        self.board_id = new_board_id
     
     # print the node
     def debug_print(self):
@@ -92,9 +100,15 @@ class Board:
     def get_head(self):
         return self.head
 
+    def set_head(self, given_space):
+        self.head=given_space
+
     # returns the tail(end)
     def get_tail(self):
         return self.tail
+
+    def set_tail(self, given_space):
+        self.tail=given_space
 
     # updates the length because it might be changed during reproduction
     def update_length(self):
@@ -106,7 +120,7 @@ class Board:
         self.length = temp_length
 
     # inserts a given node in a location where 1 < location < length - 1
-    def insert(self, given_space, insert_location):
+    def insert(self, given_space, insert_location=1):
         traveller=self.head
         for i in range(0, insert_location):
             traveller=traveller.get_forward()
@@ -114,6 +128,7 @@ class Board:
         given_space.set_forward(traveller)
         traveller.get_backward().set_forward(given_space)
         traveller.set_backward(given_space)
+        given_space.set_board_id(self.id)
         self.length+=1
         
     #pops a node at location, 1<location<length-1
@@ -125,6 +140,18 @@ class Board:
         traveller.get_forward().set_backward(traveller.get_backward())
         traveller.get_backward().set_forward(traveller.get_forward())
         self.length-=1
+
+    #pops the first node with the indicated id if it exists, else print
+    def pop_id(self, space_id=""):
+        traveller=self.get_head()
+        index=0
+        while traveller.get_id() is not space_id and traveller.get_id() is not "end":
+            traveller=traveller.get_forward()
+            index+=1
+        if traveller.get_id() is "end":
+            print("No node with id = ", space_id,"found!")
+        else:
+            self.pop(index)
         
 
     # prints a string representation of the board in console
@@ -152,6 +179,119 @@ class Board:
              node.set_id(str(new_id_count))
              new_id_count+=1
              node=node.get_forward()
+
+    def scramble_spaces(self, start_index=-1, end_index=100000):
+        space_list=[]
+        index=0
+        index2=0
+        traveller = self.get_head().get_forward()
+        if start_index == -1 and end_index == 100000:
+            while traveller.get_id() is not "end":
+                space_list.append(traveller)
+                traveller=traveller.get_forward()
+            for space in space_list:
+                    space.set_forward(None)
+                    space.set_backward(None)
+            self.get_head().set_forward(self.get_tail())
+            self.get_tail().set_backward(self.get_head())
+            while len(space_list) > 0:
+                random_space = random.choice(space_list)
+                self.insert(random_space, 1)
+                space_list.remove(random_space)
+            self.pop_id("maze_zero")
+            self.pop_id("maze_end")
+            self.insert(Space(0,"maze_zero"),1)
+            self.insert(Space(0,"maze_end"),8)
+        elif start_index != -1 and end_index == 100000:
+            for i in range(1, start_index):
+                index+=1
+                traveller = traveller.get_forward()
+            anchor = traveller.get_backward()
+            while traveller.get_id() is not "end":
+                space_list.append(traveller)
+                traveller=traveller.get_forward()
+            anchor.set_forward(self.get_tail())
+            self.get_tail().set_backward(anchor)
+            while len(space_list) > 0:
+                random_space = random.choice(space_list)
+                self.insert(random_space, index)
+                space_list.remove(random_space)
+        else:
+            for i in range(1, start_index):
+                index+=1
+                traveller = traveller.get_forward()
+            anchor = traveller.get_backward()
+            index2+=index
+            for i in range(1, end_index - start_index):
+                if traveller.get_id() is not "end":
+                    index2+=1
+                    space_list.append(traveller)
+                    traveller=traveller.get_forward()
+            reacher = traveller.get_forward()
+            anchor.set_forward(reacher)
+            reacher.set_backward(anchor)
+            while len(space_list) > 0:
+                random_space = random.choice(space_list)
+                self.insert(random_space, index)
+                space_list.remove(random_space)
+            
+             
+    #swaps spaces
+    def swap_spaces(self, location1, location2): #1 < locations < length - 1, location1 != location2
+        print("Locations: ", location1, location2)
+        if location1 != location2:
+            traveller1 = self.get_head()
+            traveller2 = self.get_head()
+            for i in range(1, location1):
+                if traveller1.get_forward().get_id() is not "end":
+                    traveller1=traveller1.get_forward()
+            for i in range(1, location2):
+                if traveller2.get_forward().get_id() is not "end":
+                    traveller2=traveller2.get_forward()
+                    
+            temp1=copy.deepcopy(traveller1)
+            temp2=copy.deepcopy(traveller2)
+            
+            if traveller1.get_forward() is not traveller2 and traveller2.get_forward() is not traveller1 and abs(location1-location2) > 1:
+                print("1")
+                traveller1.get_forward().set_backward(traveller2)
+                traveller2.get_forward().set_backward(traveller1)
+                traveller1.get_backward().set_forward(traveller2)
+                traveller2.get_backward().set_forward(traveller1)
+                traveller1.set_forward(traveller2.get_forward())
+                traveller1.set_backward(traveller2.get_backward())
+                traveller2.set_forward(temp1.get_forward())
+                traveller2.set_backward(temp1.get_backward())
+                
+            elif traveller1.get_forward() is traveller2:
+                print("2")
+                traveller1.get_backward().set_forward(traveller2)
+                traveller2.get_forward().set_backward(traveller1)
+                traveller2.set_forward(traveller1)
+                traveller1.set_backward(traveller2)
+                traveller2.set_backward(temp1.get_backward())
+                traveller1.set_forward(temp2.get_forward())
+
+            elif traveller2.get_forward() is traveller1:
+                print("3")
+                traveller2.get_backward().set_forward(traveller1)
+                traveller1.get_forward().set_backward(traveller2)
+                traveller1.set_forward(traveller2)
+                traveller1.set_backward(traveller2.get_backward())
+                traveller2.set_backward(traveller1)
+                traveller2.set_forward(temp1.get_forward())
+
+    #attaches another board onto self, reassigning self's end id and other's start id
+    def combine(self, other):          
+        self_tail = self.get_tail()
+        other_head = other.get_head()
+        self_tail.set_forward(other_head)
+        other_head.set_backward(self_tail)
+        other_head.set_id("begin")
+        self_tail.set_id("finish")
+        self.set_tail(other.get_tail())
+        return self
+            
 
     #uses variable-point crossover, can change later
     #returns two children of varying length, so we don't end up getting same size boards over and over
@@ -201,7 +341,9 @@ class Board:
                     self.insert(Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)),random.randint(1, self.get_length()-1))
             if random.random() < .2:
                 self.insert(Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)), random.randint(1, self.get_length()-1))
-        
+        if self.get_board_id() is "maze":
+            self.scramble_spaces()
+            
 
 # Player is a pointer that navigates through Spaces until it hits the "end" Space.
 class Player:
@@ -227,7 +369,10 @@ class Player:
     def move(self, roll, board_type):   
         if board_type == "normal":
             for i in range(roll):
-                if self.get_position().get_forward() != None:
+                if self.get_position().get_id() is "finish":
+                    self.set_position(self.get_position().get_forward())
+                    break
+                if self.get_position().get_id() is not "end":
                     self.set_position(self.get_position().get_forward())
 
         # this board type models Demon Island's Cave maze
@@ -296,7 +441,7 @@ class Player:
 
                     # search forward
                     while self.get_position().get_id() != tag:
-                        if self.get_position().get_forward() != None:
+                        if self.get_position().get_forward() != None and self.get_position().get_id() is not "finish" and self.get_position().get_id() is not "end":
                             self.set_position(self.get_position().get_forward())
                         else:
                             break
@@ -304,7 +449,7 @@ class Player:
                     # if not in forward, check backward
                     if self.get_position().get_id() != tag:
                         while self.get_position().get_id() != tag:
-                            if self.get_position().get_backward() != None:
+                            if self.get_position().get_backward() != None and self.get_position().get_id() is not "begin" and self.get_position().get_id() is not "start":
                                 self.set_position(self.get_position().get_backward())
                             else:
                                 break
@@ -344,6 +489,15 @@ def main():
     cave_six = Space(0, "maze_six")
     after_cave = Space(0, "maze_end")
 
+    before_cave1 = Space(0, "maze_zero")
+    cave_one1 = Space(0, "maze_one")
+    cave_two1 = Space(0, "maze_two")
+    cave_three1 = Space(0, "maze_three")
+    cave_four1 = Space(0, "maze_four")
+    cave_five1 = Space(0, "maze_five")
+    cave_six1 = Space(0, "maze_six")
+    after_cave1 = Space(0, "maze_end")
+
     game_board = Board("maze")
     game_board.insert(after_cave, 1)
     game_board.insert(cave_six, 1)
@@ -353,19 +507,49 @@ def main():
     game_board.insert(cave_two, 1)
     game_board.insert(cave_one, 1)
     game_board.insert(before_cave, 1)
+    game_board.pop_id("middle")
+
+    game_board2 = Board("maze")
+    game_board2.insert(after_cave1, 1)
+    game_board2.insert(cave_six1, 1)
+    game_board2.insert(cave_five1, 1)
+    game_board2.insert(cave_four1, 1)
+    game_board2.insert(cave_three1, 1)
+    game_board2.insert(cave_two1, 1)
+    game_board2.insert(cave_one1, 1)
+    game_board2.insert(before_cave1, 1)
+    game_board2.pop_id("middle")
+
+    straight_board = Board("normal")
+    straight_board.insert(B)
+    straight_board.insert(C)
+    straight_board.insert(D)
+    straight_board.insert(E)
+    straight_board.insert(F)
+    straight_board.insert(G)
+    straight_board.insert(H)
+    straight_board.insert(I)
+    straight_board.pop_id("middle")
 
     P_red = Player("Red") # ---------- Players ----------
     P_red.set_position(game_board.get_head()) 
+        
+    for i in range(0,9):
+        straight_board.mutate()
+        game_board.to_string()
+        game_board.mutate()
+        game_board2.mutate()
+
+    straight_board.reassign_id()
+    game_board.combine(straight_board).to_string()
+    game_board.combine(game_board2).to_string()
 
     while (P_red.get_position()).get_id() is not "end":
-        
         # Player rolls first
         roll = P_red.player_roll()
         print("Player location: ", P_red.get_position().get_id())
         print("Player rolls: ", roll)
-        P_red.move(roll, game_board.get_board_id())
-
-    game_board.to_string()
+        P_red.move(roll, P_red.get_position().get_board_id())
 
     """
     #
