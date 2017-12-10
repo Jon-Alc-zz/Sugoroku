@@ -41,7 +41,7 @@ def main():
     #print("finished printing")
     # and the list of spaces each space leads to depending on the dice roll
     data['transitions'] = {}
-    game_board.to_string() 
+    # game_board.to_string() # happens in Sugoroku.py now
     # WE NEED: 1) immediate next space 2) transition
     for i in range(len(spaces)-1):
 

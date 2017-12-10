@@ -1,75 +1,57 @@
 {
-    "author": "idk yet",
-    "date": "idk yet",
-    "dice": "idk yet",
-    "goal": "idk yet",
     "key": "value",
-    "publisher": "idk yet",
+    "title": "Generated Sugoroku Board",
+    "author": "Team Sugoroku - CMPM 146",
+    "date": "2017",
+    "publisher": "Sugoroku Board Generator Program",
+    "dice": "D6",
     "start": "idk yet",
-    "title": "idk yet",
+    "goal": "idk yet",
     "transitions": {
-        "A": {
-            "1": {
-                "target": "B"
-            },
-            "2": {
-                "target": "C"
-            },
-            "3": {
-                "target": "D"
-            },
-            "4": {
-                "target": "D"
-            },
-            "5": {
-                "target": "D"
-            },
-            "6": {
-                "target": "D"
-            }
+        "start": {
+            "backward": null,
+            "forward": "maze_zero"
         },
-        "B": {
-            "1": {
-                "target": "C"
-            },
-            "2": {
-                "target": "D"
-            },
-            "3": {
-                "target": "D"
-            },
-            "4": {
-                "target": "D"
-            },
-            "5": {
-                "target": "D"
-            },
-            "6": {
-                "target": "D"
-            },
-            "rule": "rule placeholder"
+        "maze_zero": {
+            "backward": "start",
+            "forward": "maze_one",
+            "rule": 0
         },
-        "C": {
-            "1": {
-                "target": "D"
-            },
-            "2": {
-                "target": "D"
-            },
-            "3": {
-                "target": "D"
-            },
-            "4": {
-                "target": "D"
-            },
-            "5": {
-                "target": "D"
-            },
-            "6": {
-                "target": "D"
-            },
-            "rule": "rule placeholder"
+        "maze_one": {
+            "backward": "maze_zero",
+            "forward": "maze_two",
+            "rule": 0
         },
-        "D": {}
+        "maze_two": {
+            "backward": "maze_one",
+            "forward": "maze_three",
+            "rule": 0
+        },
+        "maze_three": {
+            "backward": "maze_two",
+            "forward": "maze_four",
+            "rule": 0
+        },
+        "maze_four": {
+            "backward": "maze_three",
+            "forward": "maze_five",
+            "rule": 0
+        },
+        "maze_five": {
+            "backward": "maze_four",
+            "forward": "maze_six",
+            "rule": 0
+        },
+        "maze_six": {
+            "backward": "maze_five",
+            "forward": "maze_end",
+            "rule": 0
+        },
+        "maze_end": {
+            "backward": "maze_six",
+            "forward": "middle",
+            "rule": 0
+        },
+        "middle": {}
     }
 }
