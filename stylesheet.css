@@ -1,11 +1,106 @@
+body{
+	position:relative;
+	margin:auto;
+	width:100%;
+	height:100%;
+	padding:0;
+	top:0;
+	left:0;
+	background-color: #ffffff;
+	font-family: 'Quicksand', sans-serif;
+}
 
+.bodyText{
+	position:relative;
+	margin:auto;
+	background-color: #ffe7fc;
+	padding-left:17%;
+	padding-right:17%;
+	top:-50px;
+	padding-top:55px;
+	height:100vh;
+}
+
+.navButton .link.active{
+	font-size:27px;
+	color:white;
+}
+
+.link:active{
+	font-size:18px;
+}
+
+.navButton{
+	position:relative;
+	display:inline-block;
+	width:20%;
+}
+
+.navButton .link{
+	text-decoration: none;
+	color: #000000;
+}
+
+.space{
+	position:relative;
+	display: inline-block;
+}
+
+.spaceID{
+	position:relative;
+	z-index: 10;
+	left:-30px;
+	top:-20px;
+}
+
+.spaceImg{
+	position:relative;
+}
+
+.textBox{
+	position:relative;
+	top:-20px;
+	margin:auto;
+	padding:20px;
+	border:5px solid #f7adc2;
+	background-color: white;
+	border-radius:7px;
+}
 
 #navbar{
-	position:absolute;
-	background-color:#ffffff;
-	left:0px;
-	top:0px;
-	height:100px;
-	width:100%;
+	margin: auto;
+	z-index: 99;
+	text-align: center;
+	position: relative;
+	/*background-color: #ffafc3;*/
+	background-color: #f7adc2;
+	left: 0px;
+	top: 0px;
+	height: 100px;
+	width:100%-50px;
 	box-shadow: 0px 2px 8px #777777;
+	font-size: 35px;
+	font-weight: bold;
+	color: #000000;
+	font-family: 'Spectral SC', serif;
+}
+
+#navLinks{
+	position:relative;
+	font-size: 22px;
+	top:10px;
+}
+
+.navButton .link:hover{
+	color: #ec008c;
+}
+
+#navTitle{
+	position:relative;
+	top:5px;
+}
+
+#sugorokuBoardButton{
+	position:relative;
+	top:-20px;
 }
