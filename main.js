@@ -25,6 +25,7 @@ ReactDOM.render(
 		<Route path="/" component={Main}>
 			<IndexRoute component={SugorokuHome}/>
 			<Route path="history" component={SugorokuHistory}/>
+			<Route path="algorithm" component={SugorokuAlgorithm}/>
 			<Route path="about" component={AboutUs}/>
 		</Route>
 	</Router>,

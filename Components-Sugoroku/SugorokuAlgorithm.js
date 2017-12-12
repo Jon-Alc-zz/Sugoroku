@@ -1,4 +1,4 @@
-class SugorokuHistory extends React.Component{
+class SugorokuAlgorithm extends React.Component{
 	constructor(props){
 		super(props);
 	}
@@ -6,9 +6,9 @@ class SugorokuHistory extends React.Component{
 	render(){
 		return(
 			<div className="bodyText">
-				<h1>Sugoroku History</h1>
+				<h1>The Code</h1>
 				<div className="textBox">
-					Simon halp
+					code here
 				</div>
 			</div>
 		);

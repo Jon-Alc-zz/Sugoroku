@@ -51,7 +51,7 @@ class JSONParser extends React.Component{
 
 	render(){
 		return(
-			<div>
+			<div id="sugorokuBoardButton">
 				<button onClick={this.parser}>Click Ryan</button>
 			</div>
 		);
