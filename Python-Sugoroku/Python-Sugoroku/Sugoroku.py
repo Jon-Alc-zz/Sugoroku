@@ -12,6 +12,8 @@ Currently a very basic implementation demonstrating the main idea of Sugoroku.
 import random
 import copy
 
+BOARD_LENGTH = 15
+
 # Space is a place on the board that a Player can land on.
 class Space:
     
@@ -38,6 +40,15 @@ class Space:
     # returns the Space ahead
     def get_forward(self):
         return self.forward
+
+    # return params used for determining randomness
+    def is_random_space(self):
+        check = True
+        if isinstance(self.traverse_params, tuple):
+            check = False
+        elif self.traverse_params!=0:
+            check = False
+        return check
 
     # traverse returns values provided
     def traverse(self):
@@ -332,17 +343,61 @@ class Board:
 
     def mutate(self):
         if self.get_board_id() is "normal":
-            deviation = abs(15 - self.get_length())
-            if self.get_length() > 15:
+            deviation = abs(BOARD_LENGTH - self.get_length())
+            if self.get_length() > BOARD_LENGTH:
                 if random.random() < (deviation * .07):
                     self.pop(random.randint(1,self.get_length()-1))
-            elif self.get_length() < 15:
+            elif self.get_length() < BOARD_LENGTH:
                 if random.random() < (deviation * .3):
                     self.insert(Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)),random.randint(1, self.get_length()-1))
             if random.random() < .2:
-                self.insert(Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)), random.randint(1, self.get_length()-1))
+                roll_list=[]
+                roll_list.append(random.randint(1,6))
+                roll_add_chance=random.random()
+                while roll_add_chance < .5:
+                    to_add = random.randint(1,6)
+                    if to_add not in roll_list:
+                        roll_list.append(to_add)
+                    roll_add_chance=random.random()
+                self.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)), random.randint(1, self.get_length()-1))
         if self.get_board_id() is "maze":
             self.scramble_spaces()
+
+    def calculate_fitness(self, length, length_m=0, random_m=0, ideal_count=10, maze_m=0):
+        fitness=15
+        
+        if self.get_board_id() is "normal":
+            deviation = abs(length - self.get_length()) #length test
+            fitness-=length_m * deviation
+            traveller = self.get_head()
+            rand_count=0 #random test
+            while traveller.get_id() is not "end":
+                if traveller.is_random_space() is True:
+                    rand_count+=1
+                traveller=traveller.get_forward()
+            fitness+= random_m * rand_count
+            
+        if self.get_board_id() is "maze": #adds constant count for maze
+            fitness+=maze_m
+
+        P_test=Player("test") #player test, assuming ideal rolls
+        P_test.set_position(self.get_head())
+        turn_count=1
+        while (P_test.get_position()).get_id() is not "end":
+            # Player rolls first
+            roll = 2
+            if random.random() < .33:
+                roll=2
+            elif random.random() < .66:
+                roll=3
+            else:
+                roll=5
+            print("Player location: ", P_test.get_position().get_id())
+            print("Player rolls: ", roll)
+            P_test.move(roll, P_test.get_position().get_board_id())
+            turn_count+=1
+        fitness-=abs(ideal_count - turn_count)
+        return fitness
             
 
 # Player is a pointer that navigates through Spaces until it hits the "end" Space.
@@ -459,6 +514,8 @@ class Player:
                         if self.get_position().get_forward() != None:
                             self.set_position(self.get_position().get_forward())
 
+
+
 #
 # main is here
 #
@@ -553,6 +610,7 @@ def main():
 
 
     game_board.to_string()
+    print(game_board.calculate_fitness(BOARD_LENGTH, .4, .5, 10, 2))
     
     return game_board
 
