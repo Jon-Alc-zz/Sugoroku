@@ -50,6 +50,10 @@ class Space:
             check = False
         return check
 
+    
+    def set_traverse_params(self, given_traverse_params=0):
+        self.traverse_params = given_traverse_params
+
     # traverse returns values provided
     def traverse(self):
         if isinstance(self.traverse_params, tuple): # tuples here will always have 3 values
@@ -134,7 +138,10 @@ class Board:
     def insert(self, given_space, insert_location=1):
         traveller=self.head
         for i in range(0, insert_location):
-            traveller=traveller.get_forward()
+            if traveller is not None and traveller.get_id() is not "end":
+                traveller=traveller.get_forward()
+            else:
+                break
         given_space.set_backward(traveller.get_backward())
         given_space.set_forward(traveller)
         traveller.get_backward().set_forward(given_space)
@@ -293,15 +300,54 @@ class Board:
                 traveller2.set_forward(temp1.get_forward())
 
     #attaches another board onto self, reassigning self's end id and other's start id
-    def combine(self, other):          
-        self_tail = self.get_tail()
-        other_head = other.get_head()
+    def combine(self, other):
+        combined_board=Board()
+        combined_board.pop_id("middle")
+        """self_copy= copy.deepcopy(self)
+        other_copy = copy.deepcopy(other)
+        
+        self_tail = self_copy.get_tail()
+        print(self_copy.get_head().get_id())
+        print(self_tail.get_id())
+        
+        other_head = other_copy.get_head()
+        print(other_head.get_id())
+        print(other_copy.get_tail().get_id())
+        
         self_tail.set_forward(other_head)
         other_head.set_backward(self_tail)
+        
         other_head.set_id("begin")
         self_tail.set_id("finish")
-        self.set_tail(other.get_tail())
-        return self
+        
+        print(self_tail.get_forward().get_id())
+        print(other_head.get_backward().get_id())
+        
+        self_copy.set_tail(other_copy.get_tail())
+
+        self_copy.to_string()"""
+
+        self_walker=self.get_head()
+        while self_walker.get_forward() is not None and self_walker.get_id() is not "end":
+            self_walker=self_walker.get_forward()
+            combined_board.insert(copy.deepcopy(self_walker), combined_board.get_length()-1)
+        self_walker.set_id("begin")
+        finish_space=Space(0,"finish")
+        #self_walker.set_forward(finish_space)
+        combined_board.insert(copy.deepcopy(self_walker), combined_board.get_length()-1)
+        combined_board.insert(copy.deepcopy(finish_space), combined_board.get_length()-1)
+        other_walker=other.get_head()
+        other_walker=other_walker.get_forward()
+        while other_walker.get_forward() is not None and other_walker.get_id() is not "end":
+            combined_board.insert(copy.deepcopy(other_walker), combined_board.get_length()-1)
+            other_walker=other_walker.get_forward()
+        end_space=Space(0,"end")
+        combined_board.insert(end_space, combined_board.get_length()-1)
+        combined_board.set_tail(end_space)
+
+        combined_board.to_string()
+        
+        return combined_board
             
 
     #uses variable-point crossover, can change later
@@ -309,27 +355,52 @@ class Board:
     def generate_children(self, other):
         parent1 = copy.deepcopy(self)
         parent2 = copy.deepcopy(other)
-        point1 = random.randint(3, self.get_length()-1)
-        point2 = random.randint(3, other.get_length()-1)
+        copy1=Board()
+        copy2=Board()
+        copy1.pop_id("middle")
+        copy2.pop_id("middle")
+        point1 = random.randint((int)(self.get_length()/2)-1, (int)(self.get_length()/2)+1)
+        point2 = random.randint((int)(other.get_length()/2)-1, (int)(other.get_length()/2)+1)
 
         traveller1 = parent1.get_head()
         traveller2 = parent2.get_head()
 
         for i in range(1, point1 - 1): #chooses two random points for crossover
             traveller1=traveller1.get_forward()
+            if traveller1.get_id() is not "start" and traveller1.get_id() is not "end":
+                copy1.insert(copy.deepcopy(traveller1), copy1.get_length()-1)
         for j in range(1, point2 - 1):
+            traveller2=traveller2.get_forward()
+            if traveller2.get_id() is not "start" and traveller2.get_id() is not "end":
+                copy2.insert(copy.deepcopy(traveller2), copy2.get_length()-1)
+        while traveller1.get_id() is not "end":
+            copy2.insert(copy.deepcopy(traveller1), copy2.get_length()-1)
+            traveller1=traveller1.get_forward()
+        while traveller2.get_id() is not "end":
+            copy1.insert(copy.deepcopy(traveller2), copy2.get_length()-1)
             traveller2=traveller2.get_forward()
 
         temp1 = copy.deepcopy(traveller1)
         temp2 = copy.deepcopy(traveller2)
+        tail1 = copy.deepcopy(parent1.get_tail())
+        tail2 = copy.deepcopy(parent2.get_tail())
         
         traveller1.get_backward().set_forward(traveller2)
         traveller2.get_backward().set_forward(traveller1)
         traveller1.set_backward(temp2.get_backward())
         traveller2.set_backward(temp1.get_backward())
+        
+        parent1.set_tail(tail2)
+        parent2.set_tail(tail1)
 
         parent1.update_length() #renews the length
         parent2.update_length()
+
+        parent1.mutate()
+        parent2.mutate()
+        
+        parent1.reassign_id()
+        parent2.reassign_id()
         
         return (parent1, parent2)
 
@@ -349,17 +420,46 @@ class Board:
                     self.pop(random.randint(1,self.get_length()-1))
             elif self.get_length() < BOARD_LENGTH:
                 if random.random() < (deviation * .3):
-                    self.insert(Space(([4, 5, 6], random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)),random.randint(1, self.get_length()-1))
-            if random.random() < .2:
-                roll_list=[]
-                roll_list.append(random.randint(1,6))
-                roll_add_chance=random.random()
-                while roll_add_chance < .5:
-                    to_add = random.randint(1,6)
-                    if to_add not in roll_list:
-                        roll_list.append(to_add)
+                    roll_list=[]
+                    roll_list.append(random.randint(1,6))
                     roll_add_chance=random.random()
-                self.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600)), random.randint(1, self.get_length()-1))
+                    while roll_add_chance < .5:
+                        to_add = random.randint(1,6)
+                        if to_add not in roll_list:
+                            roll_list.append(to_add)
+                        roll_add_chance=random.random()
+                    self.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600), random.randint(1, self.get_length()-1)))
+            if random.random() < .2:
+                if random.random() <.5:
+                    roll_list=[]
+                    roll_list.append(random.randint(1,6))
+                    roll_add_chance=random.random()
+                    while roll_add_chance < .5:
+                        to_add = random.randint(1,6)
+                        if to_add not in roll_list:
+                            roll_list.append(to_add)
+                        roll_add_chance=random.random()
+                    self.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600), random.randint(1, self.get_length()-1)))
+                else:
+                    self.insert(Space(0,random.randint(1,600)), random.randint(1, self.get_length()-1))
+                
+            traveller=self.get_head() # 10% chance to assign any single node as a random traverse or nothing
+            while traveller.get_forward().get_id() is not "end":
+                traveller= traveller.get_forward()
+                if random.random() < .1:
+                    if random.random() < .5:
+                        traveller.set_traverse_params()
+                    else:
+                        roll_list=[]
+                        roll_list.append(random.randint(1,6))
+                        roll_add_chance=random.random()
+                        while roll_add_chance < .5:
+                            to_add = random.randint(1,6)
+                            if to_add not in roll_list:
+                                roll_list.append(to_add)
+                            roll_add_chance=random.random()
+                        traveller.set_traverse_params((roll_list, random.randint(1, 4), random.randint(-4, -1)))
+            
         if self.get_board_id() is "maze":
             self.scramble_spaces()
 
@@ -378,11 +478,14 @@ class Board:
             fitness+= random_m * rand_count
             
         if self.get_board_id() is "maze": #adds constant count for maze
-            fitness+=maze_m
+            return maze_m
 
-        P_test=Player("test") #player test, assuming ideal rolls
+        P_test=Player("test") #player test with two players, weighted for ideal maze rolls
         P_test.set_position(self.get_head())
+        P_test2=Player("test2")
+        P_test2.set_position(self.get_head())
         turn_count=1
+        turn_count2=1
         while (P_test.get_position()).get_id() is not "end":
             # Player rolls first
             roll = 2
@@ -396,7 +499,18 @@ class Board:
             print("Player rolls: ", roll)
             P_test.move(roll, P_test.get_position().get_board_id())
             turn_count+=1
-        fitness-=abs(ideal_count - turn_count)
+        while (P_test2.get_position()).get_id() is not "end":
+            # Player rolls first
+            roll = 2
+            if random.random() < .33:
+                roll=2
+            elif random.random() < .66:
+                roll=3
+            else:
+                roll=5
+            P_test2.move(roll, P_test2.get_position().get_board_id())
+            turn_count2+=1
+        fitness-=abs(ideal_count - ((turn_count+turn_count2)/2))
         return fitness
             
 
@@ -515,6 +629,61 @@ class Player:
                             self.set_position(self.get_position().get_forward())
 
 
+def combine_best_subboards(final_board_list, normal_count, maze_count):
+    n_count=normal_count
+    m_count=maze_count
+    combination_list=[]
+    fitness_count=0
+    final_list = sorted(final_board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
+    base_board = random.choice(final_list)
+    fitness_count+=base_board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+
+    if base_board.get_board_id() is "normal":
+        n_count-=1
+    elif base_board.get_board_id() is "maze":
+        m_count-=1
+        
+    for i in range(0, n_count):
+        for board in final_list:
+            if board.get_board_id() is "normal":
+                combination_list.append(board)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                final_list.remove(board)
+                break
+
+    for i in range(0, m_count):
+        for board in final_list:
+            if board.get_board_id() is "maze":
+                combination_list.append(board)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                final_list.remove(board)
+                break
+
+    while len(combination_list) > 0:
+        append_board=random.choice(combination_list)
+        base_board=base_board.combine(append_board)
+        combination_list.remove(append_board)
+
+    return base_board
+        
+        
+
+def generate_successors(board_list):
+    potential_list = sorted(board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
+    new_list=[]
+    for i in range(0,10):
+        if potential_list[i].get_board_id() is not "maze" and potential_list[i+1].get_board_id() is not "maze":
+            children = potential_list[i].generate_children(potential_list[i+1])
+            new_list.append(children[0])
+            new_list.append(children[1])
+            
+    for board in potential_list:
+        if board.get_board_id() is "maze":
+            new_list.append(board)
+            
+    return new_list
+    
+    
 
 #
 # main is here
@@ -527,91 +696,81 @@ class Player:
 # ([list of successful numbers], spaces to jump on success, spaces to jump on fail)
 def main():
     A = Space(0, "start") # ---------- Spaces ----------
-    B = Space(([1, 3, 5], 1, -1), "B")
-    C = Space(0, "C")
-    D = Space(0, "D")
-    E = Space(([4, 5, 6], 0, -2), "E")
-    F = Space(0, "F")
-    G = Space(([1, 3, 5], 1, 0), "G")
-    H = Space(0, "H")
-    I = Space(([1, 2, 5, 6], 0, -3), "I")
-    J = Space(0, "end")
 
-    before_cave = Space(0, "maze_zero")
-    cave_one = Space(0, "maze_one")
-    cave_two = Space(0, "maze_two")
-    cave_three = Space(0, "maze_three")
-    cave_four = Space(0, "maze_four")
-    cave_five = Space(0, "maze_five")
-    cave_six = Space(0, "maze_six")
-    after_cave = Space(0, "maze_end")
+    initial_population=[]
+    for i in range(0,10):
+        initial_population.insert(0, Board("normal"))
+        normal_board=initial_population[0]
+        for j in range(0,10):
+            if random.random()<.5:
+                normal_board.insert(Space(0,random.randint(1,600)), random.randint(1, normal_board.get_length()-1))
+            else:
+                roll_list=[]
+                roll_list.append(random.randint(1,6))
+                roll_add_chance=random.random()
+                while roll_add_chance < .5:
+                    to_add = random.randint(1,6)
+                    if to_add not in roll_list:
+                        roll_list.append(to_add)
+                    roll_add_chance=random.random()
+                normal_board.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600), random.randint(1, normal_board.get_length()-1)))
+        normal_board.pop_id("middle")
+    for i in range(0,5):
+        initial_population.insert(0, Board("maze"))
+        maze_board=initial_population[0]
+        maze_board.insert(Space(0, "maze_end"), 1)
+        maze_board.insert(Space(0, "maze_six"), 1)
+        maze_board.insert(Space(0, "maze_five"), 1)
+        maze_board.insert(Space(0, "maze_four"), 1)
+        maze_board.insert(Space(0, "maze_three"), 1)
+        maze_board.insert(Space(0, "maze_two"), 1)
+        maze_board.insert(Space(0, "maze_one"), 1)
+        maze_board.insert(Space(0, "maze_zero"), 1)
+        maze_board.pop_id("middle")
 
-    before_cave1 = Space(0, "maze_zero")
-    cave_one1 = Space(0, "maze_one")
-    cave_two1 = Space(0, "maze_two")
-    cave_three1 = Space(0, "maze_three")
-    cave_four1 = Space(0, "maze_four")
-    cave_five1 = Space(0, "maze_five")
-    cave_six1 = Space(0, "maze_six")
-    after_cave1 = Space(0, "maze_end")
+    population_limit=10
+    for i in range(0, population_limit):
+        next_population=generate_successors(initial_population)
+        initial_population=next_population
+    """normal_board=Board()
+    for j in range(0,10):
+        if random.random()<.5:
+            normal_board.insert(Space(0,random.randint(1,600)), random.randint(1, normal_board.get_length()-1))
+        else:
+            roll_list=[]
+            roll_list.append(random.randint(1,6))
+            roll_add_chance=random.random()
+            while roll_add_chance < .5:
+                to_add = random.randint(1,6)
+                if to_add not in roll_list:
+                    roll_list.append(to_add)
+                roll_add_chance=random.random()
+            normal_board.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600), random.randint(1, normal_board.get_length()-1)))
+    normal_board.pop_id("middle")
 
-    game_board = Board("maze")
-    game_board.insert(after_cave, 1)
-    game_board.insert(cave_six, 1)
-    game_board.insert(cave_five, 1)
-    game_board.insert(cave_four, 1)
-    game_board.insert(cave_three, 1)
-    game_board.insert(cave_two, 1)
-    game_board.insert(cave_one, 1)
-    game_board.insert(before_cave, 1)
-    game_board.pop_id("middle")
+    normal_board2=Board()
+    for j in range(0,10):
+        if random.random()<.5:
+            normal_board2.insert(Space(0,random.randint(1,600)), random.randint(1, normal_board2.get_length()-1))
+        else:
+            roll_list=[]
+            roll_list.append(random.randint(1,6))
+            roll_add_chance=random.random()
+            while roll_add_chance < .5:
+                to_add = random.randint(1,6)
+                if to_add not in roll_list:
+                    roll_list.append(to_add)
+                roll_add_chance=random.random()
+            normal_board2.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600), random.randint(1, normal_board2.get_length()-1)))
+    normal_board2.pop_id("middle")
 
-    game_board2 = Board("maze")
-    game_board2.insert(after_cave1, 1)
-    game_board2.insert(cave_six1, 1)
-    game_board2.insert(cave_five1, 1)
-    game_board2.insert(cave_four1, 1)
-    game_board2.insert(cave_three1, 1)
-    game_board2.insert(cave_two1, 1)
-    game_board2.insert(cave_one1, 1)
-    game_board2.insert(before_cave1, 1)
-    game_board2.pop_id("middle")
-
-    straight_board = Board("normal")
-    straight_board.insert(B)
-    straight_board.insert(C)
-    straight_board.insert(D)
-    straight_board.insert(E)
-    straight_board.insert(F)
-    straight_board.insert(G)
-    straight_board.insert(H)
-    straight_board.insert(I)
-    straight_board.pop_id("middle")
-
-    P_red = Player("Red") # ---------- Players ----------
-    P_red.set_position(game_board.get_head()) 
-        
-    for i in range(0,9):
-        straight_board.mutate()
-        game_board.to_string()
-        game_board.mutate()
-        game_board2.mutate()
-
-    straight_board.reassign_id()
-    game_board.combine(straight_board).to_string()
-    game_board.combine(game_board2).to_string()
-
-    while (P_red.get_position()).get_id() is not "end":
-        # Player rolls first
-        roll = P_red.player_roll()
-        print("Player location: ", P_red.get_position().get_id())
-        print("Player rolls: ", roll)
-        P_red.move(roll, P_red.get_position().get_board_id())
-
-
-    game_board.to_string()
-    print(game_board.calculate_fitness(BOARD_LENGTH, .4, .5, 10, 2))
+    normal_board.reassign_id()
+    normal_board2.reassign_id()
     
+    game_board = normal_board.combine(normal_board2)
+    game_board.to_string()"""
+    game_board=combine_best_subboards(initial_population, 3,2)
+    game_board.to_string()
     return game_board
 
 if __name__ == "__main__":
