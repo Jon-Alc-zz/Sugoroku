@@ -255,34 +255,48 @@ class Board:
             
     # change number of spaces in bridge board
     def modify_bridge_spaces(self):
+        if random.random() <.95:
+            """# go through board and remove specially tagged spaces
+            pointer = self.get_head().get_forward()
+            back_pointer = self.get_head()
 
-        # go through board and remove specially tagged spaces
-        pointer = self.get_head().get_forward()
-        back_pointer = self.get_head()
+            while pointer.get_id() != "end":
 
-        while pointer.get_id() != "end":
+                if pointer.get_id() != "": # delete tagged spaces, including "end"
+                    temp = pointer
+                    pointer = pointer.get_forward()
+                    back_pointer.set_forward(pointer)
+                    del(temp)
 
-            if pointer.get_id() != "": # delete tagged spaces, including "end"
-                temp = pointer
-                pointer = pointer.get_forward()
-                back_pointer.set_forward(pointer)
-                del(temp)
+                else:
+                    pointer = pointer.get_forward() # move both pointers forward
+                    back_pointer = back_pointer.get_forward()
 
-            else:
-                pointer = pointer.get_forward() # move both pointers forward
-                back_pointer = back_pointer.get_forward()
+            self.update_length()
 
-        self.update_length()
+            # modify board length
+            while self.get_length() < 15: # bridge should be 15-25 spaces
+                self.insert(Space())
 
-        # modify board length
-        while self.get_length() < 15: # bridge should be 15-25 spaces
-            self.insert(Space())
+            for i in range(random.randrange(0, 5)): 
+                self.insert(Space())
 
-        for i in range(random.randrange(0, 5)): 
-            self.insert(Space())
-
-        while self.get_length() > 20:
-            self.pop(self.get_length() - 1)
+            while self.get_length() > 20:
+                self.pop(self.get_length() - 1)"""
+            traveller=self.get_head().get_forward()
+            delete_count=0
+            index=1
+            while traveller.get_id() is not "end":
+                if traveller.get_id() is "" and random.random() < .1:
+                    self.pop(index)
+                    delete_count+=1
+                    index-=1
+                traveller=traveller.get_forward()
+                index+=1
+            if delete_count>0:
+                for i in range(0, random.randint(delete_count-1, delete_count+1)):
+                    self.insert(Space(), random.randint(1, self.get_length()-1))
+            
 
     # add tags to bridge board type
     def add_tags(self):
@@ -536,6 +550,7 @@ class Board:
         P_test.set_position(self.get_head())
         P_test2=Player("test2")
         P_test2.set_position(self.get_head())
+        
         turn_count=1
         turn_count2=1
         while (P_test.get_position()).get_id() is not "end":
@@ -563,6 +578,7 @@ class Board:
             P_test2.move(roll, P_test2.get_position().get_board_id())
             turn_count2+=1
         fitness-=abs(ideal_count - ((turn_count+turn_count2)/2))
+        
         return fitness
             
 
@@ -689,7 +705,7 @@ class Player:
             # movement is normal
             for i in range(roll):
 
-                if self.get_position().get_forward() != None:
+                if self.get_position().get_forward() != None and self.get_position().get_id() is not "begin" and self.get_position().get_id() is not "end":
                     self.set_position(self.get_position().get_forward())
 
             # "fall" spaces jump to "fall_start"
@@ -841,6 +857,17 @@ def main():
     initial_population[0].to_string()
     initial_population[0].mutate()
     initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    
     population_limit=10
     for i in range(0, population_limit):
         next_population=generate_successors(initial_population)
