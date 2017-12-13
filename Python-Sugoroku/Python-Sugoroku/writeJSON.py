@@ -6,7 +6,9 @@ def main():
     fileName = 'input_board'
     filePathNameWExt = './' + path + '/' + fileName + '.json'
     dataFile = open(filePathNameWExt,"w")
-
+    letNum = 0
+    letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+    currentLetter = letters[letNum]
     # Example
     data = {}
     data['key'] = 'value'
@@ -42,66 +44,77 @@ def main():
     data['transitions'] = {}
     # game_board.to_string() # happens in Sugoroku.py now
     # WE NEED: 1) immediate next space 2) transition
-    for i in range(len(spaces)-1):
+    checkpointCount = 1 # because User not smart enough to start at 0 :/
+    for i in range(len(spaces)): # -1
 
+        id = spaces[i].get_id()
+        if "begin" in id:
+            id = currentLetter
+        elif id != "start":
+            id += currentLetter
+            
         
-        # set immediate next/previous nodes
-        if spaces[i].get_id() != "finish" and spaces[i].get_id() != "begin":
-            data['transitions'][spaces[i].get_id()] = {}
-            if spaces[i].get_id() != "start":
-                data['transitions'][spaces[i].get_id()]["backward"] = spaces[i].get_backward().get_id()
-            else:
-                data['transitions'][spaces[i].get_id()]["backward"] = None
 
-            if spaces[i].get_id() != "end":
-                data['transitions'][spaces[i].get_id()]["forward"] =  spaces[i].get_forward().get_id()
-            else:
-                data['transitions'][spaces[i].get_id()]["forward"] = None
+        #spaces[i].set_id(str(spaces[i].get_id()) + currentLetter)
+        print(id)
+        # set immediate next/previous nodes
 
         # set the rules, from traverse_params (format: [good rolls], good roll result, failure result)
-        if i != 0 and spaces[i].get_id() != "begin" and spaces[i].get_id() != "finish":
-            data['transitions'][spaces[i].get_id()]["rule"] = spaces[i].traverse_params
-        
-        
-        
-        
-        checkpointCount = 1 # because User not smart enough to start at 0 :/
+        if "begin" not in id and "finish" not in id: #i != 0 and
+            data['transitions'][id] = {}
+            if "start" not in id:
+            #if spaces[i].get_id() != "start":
+                data['transitions'][id]["backward"] = spaces[i].get_backward().get_id() + currentLetter
+            else:
+                data['transitions'][id]["backward"] = None
+            if "end" != id:
+            #if spaces[i].get_id() != "end":
+                if spaces[i].get_forward().get_id() != "begin":
+                    data['transitions'][id]["forward"] =  spaces[i].get_forward().get_id() + currentLetter
+                else:
+                    data['transitions'][id]["forward"] =  spaces[i].get_forward().get_id() + letters[letNum + 1]
+            else:
+                data['transitions'][id]["forward"] = None
+                
+            data['transitions'][id]["rule"] = spaces[i].traverse_params
+       
 
-        if isinstance(spaces[i].traverse_params, tuple):
-            if len(spaces[i].traverse_params) >= 0: # if it has a rule
-                if spaces[i].get_id() == "finish":
+        if "begin" in id:
                     # make it a checkpoint
                     
                     # increment the name
-                    checkpointName = "checkpoint" + str(checkpointCount)
+                    checkpointName = letters[letNum+1]
                     data['transitions'][checkpointName] = {}
                     data['transitions'][checkpointName]["backward"] = spaces[i].get_backward().get_id()
                     data['transitions'][checkpointName]["forward"] = spaces[i+1].get_forward().get_id()
                     checkpointCount += 1
-                    
-                if spaces[i].get_id() == "begin":
-                    # do nothing
-                    fakevariable = 0
-                else:
+                    letNum += 1
+                    currentLetter = letters[letNum]
+        if isinstance(spaces[i].traverse_params, tuple):
+            if len(spaces[i].traverse_params) >= 0: # if it has a rule
+                
                     for r in range(7): # for each possible dice roll
                         if r != 0: # if the roll isn't 0
-                            data['transitions'][spaces[i].get_id()][r] = {}
-                            if r in spaces[i].traverse_params[0]: # ON SUCESS
+                            data['transitions'][id][r] = {}
+                            if r in spaces[i].traverse_params[0]: # ON SUCCESS
                                 temp = spaces[i]
                                 for move in range(spaces[i].traverse_params[1]):
                                     if temp.get_id() != "end":
                                         temp = temp.get_forward()
-                                        data['transitions'][spaces[i].get_id()][r]["target"] = temp
-                                    data['transitions'][spaces[i].get_id()][r]["target"] = temp.get_id()
+                                        data['transitions'][id][r]["target"] = temp
+                                    data['transitions'][id][r]["target"] = temp.get_id()
                             else:
                                 temp = spaces[i]                    # ON FAILURE
                                 for move in range(abs(spaces[i].traverse_params[2])):
                                     if temp.get_id() != "start":
                                         temp = temp.get_backward()
-                                        data['transitions'][spaces[i].get_id()][r]["target"] = temp
-                                    data['transitions'][spaces[i].get_id()][r]["target"] = temp.get_id()
+                                        data['transitions'][id][r]["target"] = temp 
+                                    data['transitions'][id][r]["target"] = temp.get_id()
     # add the last node outside of the loop bc it has no transitions
-    data['transitions'][spaces[len(spaces)-1].get_id()] = {}
+    data['transitions']["end"] = {}
+    data['transitions']["end"]["backward"] = spaces[-1].get_id() + currentLetter
+    data['transitions']["end"]["forward"] = None
+    data['transitions']["end"]["rule"] = 0
 
     dataFile.write(simplejson.dumps(data, indent=4)) # , sort_keys = True
     dataFile.close()

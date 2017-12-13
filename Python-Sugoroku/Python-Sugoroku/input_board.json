@@ -10,216 +10,231 @@
     "transitions": {
         "start": {
             "backward": null,
-            "forward": "1"
-        },
-        "1": {
-            "backward": "finish",
-            "forward": "2",
+            "forward": "m1a",
             "rule": 0
         },
-        "2": {
-            "backward": "1",
-            "forward": "3",
+        "m1a": {
+            "backward": "starta",
+            "forward": "m2a",
             "rule": 0
         },
-        "3": {
-            "backward": "2",
-            "forward": "4",
+        "m2a": {
+            "backward": "m1a",
+            "forward": "m3a",
             "rule": 0
         },
-        "4": {
-            "backward": "3",
-            "forward": "5",
+        "m3a": {
+            "backward": "m2a",
+            "forward": "m4a",
             "rule": 0
         },
-        "5": {
-            "backward": "4",
-            "forward": "6",
+        "m4a": {
+            "backward": "m3a",
+            "forward": "m5a",
+            "rule": 0
+        },
+        "m5a": {
+            "backward": "m4a",
+            "forward": "m6a",
+            "rule": 0
+        },
+        "m6a": {
+            "backward": "m5a",
+            "forward": "m7a",
+            "rule": 0
+        },
+        "m7a": {
+            "backward": "m6a",
+            "forward": "m8a",
+            "rule": 0
+        },
+        "m8a": {
+            "backward": "m7a",
+            "forward": "beginb",
+            "rule": 0
+        },
+        "a": {
+            "backward": "15a",
+            "forward": "1a",
+            "rule": 0
+        },
+        "1a": {
+            "backward": "begina",
+            "forward": "2a",
+            "rule": 0
+        },
+        "2a": {
+            "backward": "1a",
+            "forward": "3a",
+            "rule": 0
+        },
+        "3a": {
+            "backward": "2a",
+            "forward": "4a",
+            "rule": 0
+        },
+        "4a": {
+            "backward": "3a",
+            "forward": "5a",
+            "rule": 0
+        },
+        "5a": {
+            "backward": "4a",
+            "forward": "6a",
+            "rule": 0
+        },
+        "6a": {
+            "backward": "5a",
+            "forward": "7a",
             "rule": [
                 [
-                    2,
-                    6,
-                    5,
+                    2
+                ],
+                3,
+                -1
+            ],
+            "1": {
+                "target": "5"
+            },
+            "2": {
+                "target": "9"
+            },
+            "3": {
+                "target": "5"
+            },
+            "4": {
+                "target": "5"
+            },
+            "5": {
+                "target": "5"
+            },
+            "6": {
+                "target": "5"
+            }
+        },
+        "7a": {
+            "backward": "6a",
+            "forward": "8a",
+            "rule": 0
+        },
+        "8a": {
+            "backward": "7a",
+            "forward": "9a",
+            "rule": [
+                [
                     3
+                ],
+                1,
+                -3
+            ],
+            "1": {
+                "target": "5"
+            },
+            "2": {
+                "target": "5"
+            },
+            "3": {
+                "target": "9"
+            },
+            "4": {
+                "target": "5"
+            },
+            "5": {
+                "target": "5"
+            },
+            "6": {
+                "target": "5"
+            }
+        },
+        "9a": {
+            "backward": "8a",
+            "forward": "10a",
+            "rule": 0
+        },
+        "10a": {
+            "backward": "9a",
+            "forward": "11a",
+            "rule": [
+                [
+                    5,
+                    4
                 ],
                 3,
                 -3
             ],
             "1": {
-                "target": "2"
+                "target": "7"
             },
             "2": {
-                "target": "8"
+                "target": "7"
             },
             "3": {
-                "target": "8"
+                "target": "7"
             },
             "4": {
-                "target": "2"
+                "target": "13"
             },
             "5": {
-                "target": "8"
+                "target": "13"
             },
             "6": {
-                "target": "8"
+                "target": "7"
             }
         },
-        "6": {
-            "backward": "5",
-            "forward": "7",
-            "rule": [
-                [
-                    3
-                ],
-                4,
-                -4
-            ],
-            "1": {
-                "target": "2"
-            },
-            "2": {
-                "target": "2"
-            },
-            "3": {
-                "target": "10"
-            },
-            "4": {
-                "target": "2"
-            },
-            "5": {
-                "target": "2"
-            },
-            "6": {
-                "target": "2"
-            }
-        },
-        "7": {
-            "backward": "6",
-            "forward": "8",
+        "11a": {
+            "backward": "10a",
+            "forward": "12a",
             "rule": 0
         },
-        "8": {
-            "backward": "7",
-            "forward": "9",
+        "12a": {
+            "backward": "11a",
+            "forward": "13a",
+            "rule": 0
+        },
+        "13a": {
+            "backward": "12a",
+            "forward": "14a",
+            "rule": 0
+        },
+        "14a": {
+            "backward": "13a",
+            "forward": "enda",
+            "rule": 0
+        },
+        "15a": {
+            "backward": "14a",
+            "forward": "beginb",
             "rule": [
                 [
-                    4,
-                    1
+                    6,
+                    2
                 ],
                 1,
                 -3
             ],
             "1": {
-                "target": "9"
+                "target": "12"
             },
             "2": {
-                "target": "5"
+                "target": "begin"
             },
             "3": {
-                "target": "5"
+                "target": "12"
             },
             "4": {
-                "target": "9"
+                "target": "12"
             },
             "5": {
-                "target": "5"
+                "target": "12"
             },
             "6": {
-                "target": "5"
+                "target": "begin"
             }
         },
-        "9": {
-            "backward": "8",
-            "forward": "10",
+        "end": {
+            "backward": "14a",
+            "forward": null,
             "rule": 0
-        },
-        "10": {
-            "backward": "9",
-            "forward": "11",
-            "rule": 0
-        },
-        "11": {
-            "backward": "10",
-            "forward": "12",
-            "rule": 0
-        },
-        "12": {
-            "backward": "11",
-            "forward": "13",
-            "rule": 0
-        },
-        "13": {
-            "backward": "12",
-            "forward": "14",
-            "rule": [
-                [
-                    2,
-                    3,
-                    5,
-                    6
-                ],
-                1,
-                -2
-            ],
-            "1": {
-                "target": "11"
-            },
-            "2": {
-                "target": "14"
-            },
-            "3": {
-                "target": "14"
-            },
-            "4": {
-                "target": "11"
-            },
-            "5": {
-                "target": "14"
-            },
-            "6": {
-                "target": "14"
-            }
-        },
-        "14": {
-            "backward": "13",
-            "forward": "begin",
-            "rule": 0
-        },
-        "maze_zero": {
-            "backward": "finish",
-            "forward": "maze_one",
-            "rule": 0
-        },
-        "maze_one": {
-            "backward": "maze_zero",
-            "forward": "maze_two",
-            "rule": 0
-        },
-        "maze_two": {
-            "backward": "maze_one",
-            "forward": "maze_three",
-            "rule": 0
-        },
-        "maze_three": {
-            "backward": "maze_two",
-            "forward": "maze_four",
-            "rule": 0
-        },
-        "maze_four": {
-            "backward": "maze_three",
-            "forward": "maze_five",
-            "rule": 0
-        },
-        "maze_five": {
-            "backward": "maze_four",
-            "forward": "maze_six",
-            "rule": 0
-        },
-        "maze_six": {
-            "backward": "maze_five",
-            "forward": "maze_end",
-            "rule": 0
-        },
-        "maze_end": {}
+        }
     }
 }
