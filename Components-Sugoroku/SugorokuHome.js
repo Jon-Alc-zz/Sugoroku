@@ -42,7 +42,6 @@ class SugorokuHome extends React.Component{
 				</div>
 
 				<h1>Example Boards</h1>
-				<SugorokuForm />
 
 				<JSONParser 
 					setJSONFile={this.setJSONFile}
