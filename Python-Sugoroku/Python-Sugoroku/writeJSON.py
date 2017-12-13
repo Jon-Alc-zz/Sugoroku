@@ -37,19 +37,19 @@ def main():
     game_board = Sugoroku.main() #spaces is now a list
     spaces = game_board.to_list()
     #print(Sugoroku.send_board_list())
-    #for thing in spaces:
-    #    thing.debug_print()
-    #print("finished printing")
+    for thing in spaces:
+        thing.debug_print()
+    print("finished printing")
     # and the list of spaces each space leads to depending on the dice roll
     data['transitions'] = {}
     # game_board.to_string() # happens in Sugoroku.py now
     # WE NEED: 1) immediate next space 2) transition
-    checkpointCount = 1 # because User not smart enough to start at 0 :/
+    #checkpointCount = 1 # because User not smart enough to start at 0 :/
     for i in range(len(spaces)): # -1
 
         id = spaces[i].get_id()
         if "begin" in id:
-            id = currentLetter
+            id = letters[letNum+1]
         elif id != "start":
             id += currentLetter
             
@@ -60,36 +60,89 @@ def main():
         # set immediate next/previous nodes
 
         # set the rules, from traverse_params (format: [good rolls], good roll result, failure result)
-        if "begin" not in id and "finish" not in id: #i != 0 and
-            data['transitions'][id] = {}
-            if "start" not in id:
-            #if spaces[i].get_id() != "start":
-                data['transitions'][id]["backward"] = spaces[i].get_backward().get_id() + currentLetter
+       
+        data['transitions'][id] = {}
+        if "start" not in id:
+        #if spaces[i].get_id() != "start":
+            if "begin" not in spaces[i].get_backward().get_id():
+                data['transitions'][id]["backward"] = spaces[i].get_backward().get_id() + letters[letNum]
             else:
-                data['transitions'][id]["backward"] = None
-            if "end" != id:
-            #if spaces[i].get_id() != "end":
-                if spaces[i].get_forward().get_id() != "begin":
-                    data['transitions'][id]["forward"] =  spaces[i].get_forward().get_id() + currentLetter
-                else:
-                    data['transitions'][id]["forward"] =  spaces[i].get_forward().get_id() + letters[letNum + 1]
-            else:
-                data['transitions'][id]["forward"] = None
+                data['transitions'][id]["backward"] = letters[letNum]
                 
-            data['transitions'][id]["rule"] = spaces[i].traverse_params
+            if "start" == spaces[i].get_backward().get_id():
+                data['transitions'][id]["backward"] = "start"
+        else:
+            data['transitions'][id]["backward"] = None
+        if "end" != id:
+        #if spaces[i].get_id() != "end":
+            if spaces[i].get_forward().get_id() != "begin":
+                data['transitions'][id]["forward"] =  spaces[i].get_forward().get_id() + currentLetter
+            
+            else:
+                data['transitions'][id]["forward"] =  letters[letNum + 1]
+            
+            if i == len(spaces)-1:
+                data['transitions'][id]["forward"] = "end"
+        else:
+            data['transitions'][id]["forward"] = None
+        
+
+
+
+        if isinstance(spaces[i].traverse_params, tuple):
+            
+            localTuple = spaces[i].traverse_params
+            instructions = "If you roll a "
+            for r in localTuple:
+                print("rar: ",r)
+            print(" YO" + str(localTuple) + "TYPYPEP "+ str(type(localTuple)))
+        
+            for i in range(len(localTuple[0])):
+                if i == len(localTuple[0])-1 and i != 0:
+                    instructions += "or "
+
+                instructions += str(localTuple[0][i])
+                if i != len(localTuple[0]) -1 and len(localTuple[0]) > 2:
+                    instructions += ", "
+                if 2 == len(localTuple[0]) and i != len(localTuple[0]) -1:
+                    instructions += " "
+                
+                    
+            instructions += ", move forward " + str(localTuple[1]) + "."
+            
+            instructions += " Else, move back "
+            
+            instructions += str(abs(localTuple[2])) + "!"
+            
+            
+            data['transitions'][id]["rule"] = instructions
+        
+        else:
+            data['transitions'][id]["rule"] = 0
+            
+        
+        #localTuple[0] #roll to go goodly
+        #localTuple[1] #goodly
+        #localTuple[2] #noodgoodly
+       
+       
        
 
-        if "begin" in id:
+        #if "begin" in id:
+        if id == letters[letNum+1]:
                     # make it a checkpoint
-                    
-                    # increment the name
-                    checkpointName = letters[letNum+1]
-                    data['transitions'][checkpointName] = {}
-                    data['transitions'][checkpointName]["backward"] = spaces[i].get_backward().get_id()
-                    data['transitions'][checkpointName]["forward"] = spaces[i+1].get_forward().get_id()
-                    checkpointCount += 1
                     letNum += 1
                     currentLetter = letters[letNum]
+                    # increment the name
+                    #checkpointName = letters[letNum+1]
+                    
+                    data['transitions'][id] = {}
+                    data['transitions'][id]["backward"] = spaces[i].get_backward().get_id() + letters[letNum-1]
+                    data['transitions'][id]["forward"] = spaces[i].get_forward().get_id() + letters[letNum]
+                    data['transitions'][id]["rule"] = "checkpoint"
+                    print("checkpoint added")
+                    #checkpointCount += 1
+                    
         if isinstance(spaces[i].traverse_params, tuple):
             if len(spaces[i].traverse_params) >= 0: # if it has a rule
                 
@@ -103,6 +156,8 @@ def main():
                                         temp = temp.get_forward()
                                         data['transitions'][id][r]["target"] = temp
                                     data['transitions'][id][r]["target"] = temp.get_id()
+                                    if "begin" == temp.get_id():
+                                        data['transitions'][id][r]["target"] = currentLetter
                             else:
                                 temp = spaces[i]                    # ON FAILURE
                                 for move in range(abs(spaces[i].traverse_params[2])):
@@ -110,6 +165,8 @@ def main():
                                         temp = temp.get_backward()
                                         data['transitions'][id][r]["target"] = temp 
                                     data['transitions'][id][r]["target"] = temp.get_id()
+                                    if "begin" == temp.get_id():
+                                        data['transitions'][id][r]["target"] = currentLetter
     # add the last node outside of the loop bc it has no transitions
     data['transitions']["end"] = {}
     data['transitions']["end"]["backward"] = spaces[-1].get_id() + currentLetter
