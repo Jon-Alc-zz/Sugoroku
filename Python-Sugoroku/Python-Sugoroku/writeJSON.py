@@ -45,6 +45,7 @@ def main():
     # game_board.to_string() # happens in Sugoroku.py now
     # WE NEED: 1) immediate next space 2) transition
     #checkpointCount = 1 # because User not smart enough to start at 0 :/
+    n = 1
     for i in range(len(spaces)): # -1
 
         id = spaces[i].get_id()
@@ -52,6 +53,16 @@ def main():
             id = letters[letNum+1]
         elif id != "start":
             id += currentLetter
+        if "fall_start" in id:
+            id = "fs" + letters[letNum]
+            
+        elif "fall" in id:
+            id = "f" + letters[letNum] + str(n)
+            n += 1
+        elif "path_join" in id:
+            id = "pj" + letters[letNum]
+            
+            
             
         
 
@@ -68,18 +79,40 @@ def main():
                 data['transitions'][id]["backward"] = spaces[i].get_backward().get_id() + letters[letNum]
             else:
                 data['transitions'][id]["backward"] = letters[letNum]
+            
+            if spaces[i].get_backward().get_id() == "fall_start":
+                data['transitions'][id]["backward"] =  "fs" + str(letters[letNum])
+            
+            if spaces[i].get_backward().get_id() == "fall" and "fall" in id:
+                data['transitions'][id]["backward"] =  "f" + str(letters[letNum]) + str(n-2)
+            
+            elif spaces[i].get_backward().get_id() == "fall":
+                data['transitions'][id]["backward"] =  "f" + str(letters[letNum]) + str(n-1)
                 
+            if spaces[i].get_backward().get_id() == "path_join":
+                data['transitions'][id]["backward"] =  "pj" + str(letters[letNum])
+            
             if "start" == spaces[i].get_backward().get_id():
                 data['transitions'][id]["backward"] = "start"
         else:
             data['transitions'][id]["backward"] = None
         if "end" != id:
-        #if spaces[i].get_id() != "end":
+        
+        
             if spaces[i].get_forward().get_id() != "begin":
                 data['transitions'][id]["forward"] =  spaces[i].get_forward().get_id() + currentLetter
             
             else:
                 data['transitions'][id]["forward"] =  letters[letNum + 1]
+            
+            if spaces[i].get_forward().get_id() == "fall_start":
+                data['transitions'][id]["forward"] =  "fs" + str(letters[letNum])
+            
+            if spaces[i].get_forward().get_id() == "fall":
+                data['transitions'][id]["forward"] =  "f" + str(letters[letNum]) + str(n)
+                
+            if spaces[i].get_forward().get_id() == "path_join":
+                data['transitions'][id]["forward"] =  "pj" + str(letters[letNum])
             
             if i == len(spaces)-1:
                 data['transitions'][id]["forward"] = "end"
@@ -93,10 +126,6 @@ def main():
             
             localTuple = spaces[i].traverse_params
             instructions = "If you roll a "
-            for r in localTuple:
-                print("rar: ",r)
-            print(" YO" + str(localTuple) + "TYPYPEP "+ str(type(localTuple)))
-        
             for i in range(len(localTuple[0])):
                 if i == len(localTuple[0])-1 and i != 0:
                     instructions += "or "
@@ -116,8 +145,15 @@ def main():
             
             
             data['transitions'][id]["rule"] = instructions
+        elif "fs" in id:
+            data['transitions'][id]["rule"] = "If you haven't fallen, go to path join (pj)"
+        elif "f" in id:
+            data['transitions'][id]["rule"] = "Fall to fall start (fs)"
+        elif "pj" in id:
+            data['transitions'][id]["rule"] = "Path join"
         
         else:
+            
             data['transitions'][id]["rule"] = 0
             
         
@@ -128,7 +164,7 @@ def main():
        
        
 
-        #if "begin" in id:
+        #if "begin" in id: #CHECKPOINT
         if id == letters[letNum+1]:
                     # make it a checkpoint
                     letNum += 1
@@ -140,7 +176,19 @@ def main():
                     data['transitions'][id]["backward"] = spaces[i].get_backward().get_id() + letters[letNum-1]
                     data['transitions'][id]["forward"] = spaces[i].get_forward().get_id() + letters[letNum]
                     data['transitions'][id]["rule"] = "checkpoint"
-                    print("checkpoint added")
+                    if spaces[i].get_backward().get_id() == "fall_start":
+                        data['transitions'][id]["backward"] =  "fs" + str(letters[letNum])
+                        
+                    elif spaces[i].get_backward().get_id() == "fall":
+                        data['transitions'][id]["backward"] =  "f" + str(letters[letNum]) + str(n-1)
+                        
+                    if spaces[i].get_forward().get_id() == "fall_start":
+                        data['transitions'][id]["forward"] =  "fs" + str(letters[letNum])
+                    
+                    elif spaces[i].get_forward().get_id() == "fall":
+                        data['transitions'][id]["forward"] =  "f" + str(letters[letNum]) + str(n)
+                    if spaces[i].get_backward().get_id() == "path_join":
+                        data['transitions'][id]["backward"] =  "pj" + str(letters[letNum])
                     #checkpointCount += 1
                     
         if isinstance(spaces[i].traverse_params, tuple):
