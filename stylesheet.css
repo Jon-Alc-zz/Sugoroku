@@ -10,6 +10,10 @@ body{
 	font-family: 'Quicksand', sans-serif;
 }
 
+form{
+	position:relative;
+}
+
 .bodyText{
 	position:relative;
 	margin:auto;
@@ -46,11 +50,15 @@ body{
 	display: inline-block;
 }
 
+.space:hover .tooltip{
+	visibility:visible;
+}
+
 .spaceID{
 	position:relative;
 	z-index: 10;
-	left:-30px;
-	top:-20px;
+	left:-35px;
+	/*top:-20px;*/
 }
 
 .spaceImg{
@@ -59,12 +67,26 @@ body{
 
 .textBox{
 	position:relative;
-	top:-20px;
+	/*top:-20px;*/
 	margin:auto;
 	padding:20px;
 	border:5px solid #f7adc2;
 	background-color: white;
 	border-radius:7px;
+}
+
+.tooltip{
+  position:absolute;
+  z-index:50;
+  width: auto;
+  background-color: #ffffff;
+  border:3px solid #f7adc2;
+  color: #000000;
+  text-align: center;
+  border-radius: 6px;
+  visibility:hidden;
+  font-size: 20px;
+  padding:5px;
 }
 
 #navbar{
@@ -77,7 +99,7 @@ body{
 	left: 0px;
 	top: 0px;
 	height: 100px;
-	width:100%-50px;
+	width:100%;
 	box-shadow: 0px 2px 8px #777777;
 	font-size: 35px;
 	font-weight: bold;
@@ -102,5 +124,48 @@ body{
 
 #sugorokuBoardButton{
 	position:relative;
-	top:-20px;
+	/*top:-20px;*/
+}
+
+/****************************DROPDOWN********************************/
+.dropdownContent {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    width: 50%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 11;
+}
+
+.dropdownContent a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width:100%;
+}
+
+.dropdownContent a:hover {
+	background-color: #f1f1f1
+}
+
+.dropdownIcon{
+	float:right;
+}
+
+.show{
+	display:block;
+}
+
+#currentDropdown {
+    background-color: #ffffff;
+    color: black;
+    padding: 16px;
+    font-size: 16px;
+    border:5px solid #f7adc2;
+    cursor: pointer;
+    width:50%;
+    margin-top:5px;
+    margin-bottom:5px;
+    border-radius:5px;
 }

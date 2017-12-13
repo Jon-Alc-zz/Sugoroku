@@ -7,11 +7,17 @@ class BoardDisplay extends React.Component{
 		console.log(this.props.getJSONFile);
 		var spaceKeyArr = this.props.getSpaceKeys;
 		var boardDisplayArr = [];
+		var rule = "";
 
 		for(var i = 0; i < spaceKeyArr.length; i++){
+			console.log(this.props.getJSONFile["transitions"][spaceKeyArr[i]]);
 			var isStart = false;
 			var isEnd = false;
 			var isJump = false;
+
+			if(this.props.getJSONFile["transitions"][spaceKeyArr[i]]["rule"] != null){
+				rule = this.props.getJSONFile["transitions"][spaceKeyArr[i]]["rule"];
+			}
 
 			if(i == 0){
 				isStart = true;
@@ -26,7 +32,8 @@ class BoardDisplay extends React.Component{
 									spaceID={spaceKeyArr[i]}
 									isStart={isStart}
 									isEnd={isEnd}
-									isJump={isJump} />);
+									isJump={isJump}
+									rule={rule} />);
 		}
 
 		return(
