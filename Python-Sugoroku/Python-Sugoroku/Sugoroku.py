@@ -13,6 +13,10 @@ import random
 import copy
 
 BOARD_LENGTH = 15
+RANDOM_MULTIPLIER = .3
+LENGTH_MULTIPLIER = .4
+MAZE_MULTIPLIER = 5
+TURN_COUNT=10
 
 # Space is a place on the board that a Player can land on.
 class Space:
@@ -538,7 +542,7 @@ class Board:
 
     def calculate_fitness(self, length, length_m=0, random_m=0, ideal_count=10, maze_m=0):
         fitness=15
-        
+        random_scaling = 2
         if self.get_board_id() is "normal":
             deviation = abs(length - self.get_length()) #length test
             fitness-=length_m * deviation
@@ -546,7 +550,8 @@ class Board:
             rand_count=0 #random test
             while traveller.get_id() is not "end":
                 if traveller.is_random_space() is True:
-                    rand_count+=1
+                    rand_count+=random_scaling
+                    random_scaling = random_scaling*.9
                 traveller=traveller.get_forward()
             fitness+= random_m * rand_count
             
@@ -740,9 +745,9 @@ def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_co
     b_count=bridge_count
     combination_list=[]
     fitness_count=0
-    final_list = sorted(final_board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
+    final_list = sorted(final_board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER), reverse=True)
     base_board = random.choice(final_list)
-    fitness_count+=base_board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+    fitness_count+=base_board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER)
 
     if base_board.get_board_id() is "normal":
         n_count-=1
@@ -755,7 +760,7 @@ def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_co
         for board in final_list:
             if board.get_board_id() is "normal":
                 combination_list.append(board)
-                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER)
                 final_list.remove(board)
                 break
 
@@ -763,7 +768,7 @@ def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_co
         for board in final_list:
             if board.get_board_id() is "maze":
                 combination_list.append(board)
-                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER)
                 final_list.remove(board)
                 break
 
@@ -771,21 +776,23 @@ def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_co
         for board in final_list:
             if board.get_board_id() is "bridge":
                 combination_list.append(board)
-                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER)
                 final_list.remove(board)
                 break
-
+            
+    last_choice=base_board
     while len(combination_list) > 0:
         append_board=random.choice(combination_list)
-        base_board=base_board.combine(append_board)
-        combination_list.remove(append_board)
+        if random.random() < .33 or last_choice.get_board_id() is not append_board.get_board_id():
+            base_board=base_board.combine(append_board)
+            combination_list.remove(append_board)
 
     return base_board
         
         
 
 def generate_successors(board_list):
-    potential_list = sorted(board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
+    potential_list = sorted(board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER), reverse=True)
     new_list=[]
     for i in range(0,10):
         if potential_list[i].get_board_id() is "normal" and potential_list[i+1].get_board_id() is "normal":
@@ -860,208 +867,15 @@ def main():
         bridge_board.insert(Space(0, "fall"), 7)
         bridge_board.insert(Space(0, "fall_start"), 10)
         bridge_board.insert(Space(0, "path_join"), 15)
-
-    initial_population[0].to_string()
-    initial_population[0].mutate()
-    initial_population[0].to_string()
-    initial_population[0].mutate()
-    initial_population[0].to_string()
-    initial_population[0].mutate()
-    initial_population[0].to_string()
-    initial_population[0].mutate()
-    initial_population[0].to_string()
-    initial_population[0].mutate()
-    initial_population[0].to_string()
-    initial_population[0].mutate()
-    initial_population[0].to_string()
     
     population_limit=10
     for i in range(0, population_limit):
         next_population=generate_successors(initial_population)
         initial_population=next_population
-    """normal_board=Board()
-    for j in range(0,10):
-        if random.random()<.5:
-            normal_board.insert(Space(0,random.randint(1,600)), random.randint(1, normal_board.get_length()-1))
-        else:
-            roll_list=[]
-            roll_list.append(random.randint(1,6))
-            roll_add_chance=random.random()
-            while roll_add_chance < .5:
-                to_add = random.randint(1,6)
-                if to_add not in roll_list:
-                    roll_list.append(to_add)
-                roll_add_chance=random.random()
-            normal_board.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600), random.randint(1, normal_board.get_length()-1)))
-    normal_board.pop_id("middle")
 
-    normal_board2=Board()
-    for j in range(0,10):
-        if random.random()<.5:
-            normal_board2.insert(Space(0,random.randint(1,600)), random.randint(1, normal_board2.get_length()-1))
-        else:
-            roll_list=[]
-            roll_list.append(random.randint(1,6))
-            roll_add_chance=random.random()
-            while roll_add_chance < .5:
-                to_add = random.randint(1,6)
-                if to_add not in roll_list:
-                    roll_list.append(to_add)
-                roll_add_chance=random.random()
-            normal_board2.insert(Space((roll_list, random.randint(1, 4), random.randint(-4, -1)), random.randint(1,600), random.randint(1, normal_board2.get_length()-1)))
-    normal_board2.pop_id("middle")
-
-    normal_board.reassign_id()
-    normal_board2.reassign_id()
-    
-    game_board = normal_board.combine(normal_board2)
-    game_board.to_string()"""
-    game_board=combine_best_subboards(initial_population, 3,1,1)
+    game_board=combine_best_subboards(initial_population, random.randint(1,3),random.randint(1,3),random.randint(1,3))
     
     game_board.to_string()
-
-    """# ---------- Spaces ----------
-
-    # straight board spaces
-    A = Space(0, "start")
-    B = Space(([1, 3, 5], 1, -1), "B")
-    C = Space(0, "C")
-    D = Space(0, "D")
-    E = Space(([4, 5, 6], 0, -2), "E")
-    F = Space(0, "F")
-    G = Space(([1, 3, 5], 1, 0), "G")
-    H = Space(0, "H")
-    I = Space(([1, 2, 5, 6], 0, -3), "I")
-    J = Space(0, "end")
-
-    # maze board spaces
-    before_cave = Space(0, "m1")
-    cave_one = Space(0, "m2")
-    cave_two = Space(0, "m3")
-    cave_three = Space(0, "m4")
-    cave_four = Space(0, "m5")
-    cave_five = Space(0, "m6")
-    cave_six = Space(0, "m7")
-    after_cave = Space(0, "m8")
-
-    before_cave1 = Space(0, "m1")
-    cave_one1 = Space(0, "m2")
-    cave_two1 = Space(0, "m3")
-    cave_three1 = Space(0, "m4")
-    cave_four1 = Space(0, "m5")
-    cave_five1 = Space(0, "m6")
-    cave_six1 = Space(0, "m7")
-    after_cave1 = Space(0, "m8")
-
-    game_board = Board("maze")
-    game_board.insert(after_cave, 1)
-    game_board.insert(cave_six, 1)
-    game_board.insert(cave_five, 1)
-    game_board.insert(cave_four, 1)
-    game_board.insert(cave_three, 1)
-    game_board.insert(cave_two, 1)
-    game_board.insert(cave_one, 1)
-    game_board.insert(before_cave, 1)
-    game_board.pop_id("middle")
-
-    game_board2 = Board("maze")
-    game_board2.insert(after_cave1, 1)
-    game_board2.insert(cave_six1, 1)
-    game_board2.insert(cave_five1, 1)
-    game_board2.insert(cave_four1, 1)
-    game_board2.insert(cave_three1, 1)
-    game_board2.insert(cave_two1, 1)
-    game_board2.insert(cave_one1, 1)
-    game_board2.insert(before_cave1, 1)
-    game_board2.pop_id("middle")
-
-    straight_board = Board("normal")
-    straight_board.insert(B)
-    straight_board.insert(C)
-    straight_board.insert(D)
-    straight_board.insert(E)
-    straight_board.insert(F)
-    straight_board.insert(G)
-    straight_board.insert(H)
-    straight_board.insert(I)
-    straight_board.pop_id("middle")
-
-    # bridge board spaces
-    bridgeA = Space()
-    bridgeB = Space()
-    bridgeC = Space(0, "fall")
-    bridgeD = Space()
-    bridgeE = Space()
-    bridgeF = Space(0, "fall")
-    bridgeG = Space(0, "fall")
-    bridgeH = Space()
-    bridgeI = Space()
-    bridgeJ = Space(0, "fall_start")
-    bridgeK = Space()
-    bridgeL = Space()
-    bridgeM = Space()
-    bridgeN = Space()
-    bridgeO = Space()
-    bridgeP = Space()
-    bridgeQ = Space()
-    bridgeR = Space(0, "path_join")
-    bridgeS = Space()
-
-    game_board3 = Board("bridge")
-    game_board3.insert(bridgeS)
-    game_board3.insert(bridgeR)
-    game_board3.insert(bridgeQ)
-    game_board3.insert(bridgeP)
-    game_board3.insert(bridgeO)
-    game_board3.insert(bridgeN)
-    game_board3.insert(bridgeM)
-    game_board3.insert(bridgeL)
-    game_board3.insert(bridgeK)
-    game_board3.insert(bridgeJ)
-    game_board3.insert(bridgeI)
-    game_board3.insert(bridgeH)
-    game_board3.insert(bridgeG)
-    game_board3.insert(bridgeF)
-    game_board3.insert(bridgeE)
-    game_board3.insert(bridgeD)
-    game_board3.insert(bridgeC)
-    game_board3.insert(bridgeB)
-    game_board3.insert(bridgeA)
-    game_board3.pop_id("middle")
-
-    # ---------- Players ----------
-    P_red = Player("Red")
-    P_red.set_position(game_board3.get_head()) 
-
-    # mutation, generating, and genetic algorithms
-    for i in range(0, 9):
-
-        straight_board.mutate()
-        game_board.mutate()
-        game_board2.mutate()
-        game_board3.mutate()
-
-    straight_board.reassign_id()
-    game_board3.reassign_id()
-    game_board3.add_tags()
-    game_board3.to_string()
-
-    game_board.combine(straight_board).to_string()
-    game_board.combine(game_board2).to_string()
-    game_board.combine(game_board3).to_string()
-
-    # play the game
-    while (P_red.get_position()).get_id() is not "end":
-        # Player rolls first
-        roll = P_red.player_roll()
-        print("Player location: ", P_red.get_position().get_id())
-        print("Player rolls: ", roll)
-        P_red.move(roll, P_red.get_position().get_board_id())
-
-    game_board.to_string()
-
-    print(game_board.calculate_fitness(BOARD_LENGTH, .4, .5, 10, 2))"""
-
     return game_board
 
 if __name__ == "__main__":
