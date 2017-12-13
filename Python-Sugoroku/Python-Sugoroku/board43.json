@@ -1,0 +1,187 @@
+{
+    "key": "value",
+    "title": "Generated Sugoroku Board",
+    "author": "Team Sugoroku - CMPM 146",
+    "date": "2017",
+    "publisher": "Sugoroku Board Generator Program",
+    "dice": "D6",
+    "start": "idk yet",
+    "goal": "idk yet",
+    "transitions": {
+        "start": {
+            "backward": null,
+            "forward": "1a",
+            "rule": 0
+        },
+        "1a": {
+            "backward": "start",
+            "forward": "2a",
+            "rule": 0
+        },
+        "2a": {
+            "backward": "1a",
+            "forward": "3a",
+            "rule": 0
+        },
+        "3a": {
+            "backward": "2a",
+            "forward": "4a",
+            "rule": 0
+        },
+        "4a": {
+            "backward": "3a",
+            "forward": "5a",
+            "rule": 0
+        },
+        "5a": {
+            "backward": "4a",
+            "forward": "Fa1",
+            "rule": 0
+        },
+        "Fa1": {
+            "backward": "5a",
+            "forward": "Fa2",
+            "rule": "Fall to fall start (FSa)"
+        },
+        "Fa2": {
+            "backward": "Fa2",
+            "forward": "Fa3",
+            "rule": "Fall to fall start (FSa)"
+        },
+        "Fa3": {
+            "backward": "Fa3",
+            "forward": "6a",
+            "rule": "Fall to fall start (FSa)"
+        },
+        "6a": {
+            "backward": "Fa3",
+            "forward": "7a",
+            "rule": 0
+        },
+        "7a": {
+            "backward": "6a",
+            "forward": "8a",
+            "rule": 0
+        },
+        "8a": {
+            "backward": "7a",
+            "forward": "FSa",
+            "rule": 0
+        },
+        "FSa": {
+            "backward": "8a",
+            "forward": "9a",
+            "rule": "If you haven't fallen, go to path join (PJa)"
+        },
+        "9a": {
+            "backward": "FSa",
+            "forward": "10a",
+            "rule": 0
+        },
+        "10a": {
+            "backward": "9a",
+            "forward": "11a",
+            "rule": 0
+        },
+        "11a": {
+            "backward": "10a",
+            "forward": "PJa",
+            "rule": 0
+        },
+        "PJa": {
+            "backward": "11a",
+            "forward": "12a",
+            "rule": "Path join"
+        },
+        "12a": {
+            "backward": "PJa",
+            "forward": "13a",
+            "rule": 0
+        },
+        "13a": {
+            "backward": "12a",
+            "forward": "14a",
+            "rule": 0
+        },
+        "14a": {
+            "backward": "13a",
+            "forward": "15a",
+            "rule": 0
+        },
+        "15a": {
+            "backward": "14a",
+            "forward": "16a",
+            "rule": 0
+        },
+        "16a": {
+            "backward": "15a",
+            "forward": "17a",
+            "rule": 0
+        },
+        "17a": {
+            "backward": "16a",
+            "forward": "18a",
+            "rule": 0
+        },
+        "18a": {
+            "backward": "17a",
+            "forward": "19a",
+            "rule": 0
+        },
+        "19a": {
+            "backward": "18a",
+            "forward": "b",
+            "rule": 0
+        },
+        "b": {
+            "backward": "19a",
+            "forward": "m1b",
+            "rule": "checkpoint"
+        },
+        "m1b": {
+            "backward": "b",
+            "forward": "m4b",
+            "rule": 0
+        },
+        "m4b": {
+            "backward": "m1b",
+            "forward": "m2b",
+            "rule": 0
+        },
+        "m2b": {
+            "backward": "m4b",
+            "forward": "m7b",
+            "rule": 0
+        },
+        "m7b": {
+            "backward": "m2b",
+            "forward": "m5b",
+            "rule": 0
+        },
+        "m5b": {
+            "backward": "m7b",
+            "forward": "m6b",
+            "rule": 0
+        },
+        "m6b": {
+            "backward": "m5b",
+            "forward": "m3b",
+            "rule": 0
+        },
+        "m3b": {
+            "backward": "m6b",
+            "forward": "m8b",
+            "rule": 0
+        },
+        "m8b": {
+            "backward": "m3b",
+            "forward": "end",
+            "rule": 0
+        },
+        "end": {
+            "backward": "m8b",
+            "forward": null,
+            "rule": 0
+        }
+    }
+}
