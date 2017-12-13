@@ -149,7 +149,7 @@ class Board:
         given_space.set_board_id(self.id)
         self.length+=1
         
-    #pops a node at location, 1<location<length-1
+    # pops a node at location, 1<location<length-1
     def pop(self, pop_location):
         traveller=self.get_head()
         for i in range(0, pop_location):
@@ -159,7 +159,7 @@ class Board:
         traveller.get_backward().set_forward(traveller.get_forward())
         self.length-=1
 
-    #pops the first node with the indicated id if it exists, else print
+    # pops the first node with the indicated id if it exists, else print
     def pop_id(self, space_id=""):
         traveller=self.get_head()
         index=0
@@ -253,7 +253,57 @@ class Board:
                 self.insert(random_space, index)
                 space_list.remove(random_space)
             
-             
+    # change number of spaces in bridge board
+    def modify_bridge_spaces(self):
+
+        # go through board and remove specially tagged spaces
+        pointer = self.get_head().get_forward()
+        back_pointer = self.get_head()
+
+        while pointer.get_id() != "end":
+
+            if pointer.get_id() != "": # delete tagged spaces, including "end"
+                temp = pointer
+                pointer = pointer.get_forward()
+                back_pointer.set_forward(pointer)
+                del(temp)
+
+            else:
+                pointer = pointer.get_forward() # move both pointers forward
+                back_pointer = back_pointer.get_forward()
+
+        self.update_length()
+
+        # modify board length
+        while self.get_length() < 15: # bridge should be 15-25 spaces
+            self.insert(Space())
+
+        for i in range(random.randrange(0, 5)): 
+            self.insert(Space())
+
+        while self.get_length() > 20:
+            self.pop(self.get_length() - 1)
+
+    # add tags to bridge board type
+    def add_tags(self):
+
+        pointer = self.get_head().get_forward()
+        pointer.set_id("fall") # one fall space guaranteed
+        pointer = pointer.get_forward()
+
+        for i in range((int)((self.get_length() / 2) - 1)):
+            if random.random() < .33: # 33% chance to create a fall space
+                pointer.set_id("fall")
+            pointer = pointer.get_forward()
+        
+        pointer = pointer.get_forward() # generate "fall_start" around halfway point
+        pointer.set_id("fall_start")
+
+        while pointer.get_forward().get_id() != "end":
+            pointer = pointer.get_forward()
+
+        pointer.set_id("path_join")
+
     #swaps spaces
     def swap_spaces(self, location1, location2): #1 < locations < length - 1, location1 != location2
         print("Locations: ", location1, location2)
@@ -413,6 +463,7 @@ class Board:
         return board_list
 
     def mutate(self):
+
         if self.get_board_id() is "normal":
             deviation = abs(BOARD_LENGTH - self.get_length())
             if self.get_length() > BOARD_LENGTH:
@@ -462,6 +513,9 @@ class Board:
             
         if self.get_board_id() is "maze":
             self.scramble_spaces()
+
+        if self.get_board_id() is "bridge":
+            self.modify_bridge_spaces()
 
     def calculate_fitness(self, length, length_m=0, random_m=0, ideal_count=10, maze_m=0):
         fitness=15
@@ -544,6 +598,8 @@ class Player:
                 if self.get_position().get_id() is not "end":
                     self.set_position(self.get_position().get_forward())
 
+            self.get_position().traverse()
+
         # this board type models Demon Island's Cave maze
         if board_type == "maze":
 
@@ -613,6 +669,7 @@ class Player:
                         if self.get_position().get_forward() != None and self.get_position().get_id() is not "finish" and self.get_position().get_id() is not "end":
                             self.set_position(self.get_position().get_forward())
                         else:
+                            print("space", tag, "not found")
                             break
 
                     # if not in forward, check backward
@@ -621,12 +678,40 @@ class Player:
                             if self.get_position().get_backward() != None and self.get_position().get_id() is not "begin" and self.get_position().get_id() is not "start":
                                 self.set_position(self.get_position().get_backward())
                             else:
+                                print("space", tag, "not found")
                                 break
 
             if roll_normally:
                 for i in range(roll):
                         if self.get_position().get_forward() != None:
                             self.set_position(self.get_position().get_forward())
+
+        # this models the bridge from Demon Island
+        if board_type == "bridge":
+
+            # movement is normal
+            for i in range(roll):
+
+                if self.get_position().get_forward() != None:
+                    self.set_position(self.get_position().get_forward())
+
+            # "fall" spaces jump to "fall_start"
+            if self.get_position().get_id() == "fall":
+                while self.get_position().get_id() != "fall_start":
+                    if self.get_position().get_forward() != None:
+                        self.set_position(self.get_position().get_forward())
+                    else: # this should never happen
+                        print("fall_start not found")
+                        break
+
+            # end of bridge, jump straight to path_join
+            if self.get_position().get_forward() != None and self.get_position().get_forward().get_id() == "fall_start":
+                while self.get_position().get_id() != "path_join":
+                    if self.get_position().get_forward() != None:
+                        self.set_position(self.get_position().get_forward())
+                    else: # this should never happen
+                        print("path_join not found")
+                        break
 
 
 def combine_best_subboards(final_board_list, normal_count, maze_count):
@@ -771,6 +856,149 @@ def main():
     game_board.to_string()"""
     game_board=combine_best_subboards(initial_population, 3,2)
     game_board.to_string()
+
+    """# ---------- Spaces ----------
+
+    # straight board spaces
+    A = Space(0, "start")
+    B = Space(([1, 3, 5], 1, -1), "B")
+    C = Space(0, "C")
+    D = Space(0, "D")
+    E = Space(([4, 5, 6], 0, -2), "E")
+    F = Space(0, "F")
+    G = Space(([1, 3, 5], 1, 0), "G")
+    H = Space(0, "H")
+    I = Space(([1, 2, 5, 6], 0, -3), "I")
+    J = Space(0, "end")
+
+    # maze board spaces
+    before_cave = Space(0, "maze_zero")
+    cave_one = Space(0, "maze_one")
+    cave_two = Space(0, "maze_two")
+    cave_three = Space(0, "maze_three")
+    cave_four = Space(0, "maze_four")
+    cave_five = Space(0, "maze_five")
+    cave_six = Space(0, "maze_six")
+    after_cave = Space(0, "maze_end")
+
+    before_cave1 = Space(0, "maze_zero")
+    cave_one1 = Space(0, "maze_one")
+    cave_two1 = Space(0, "maze_two")
+    cave_three1 = Space(0, "maze_three")
+    cave_four1 = Space(0, "maze_four")
+    cave_five1 = Space(0, "maze_five")
+    cave_six1 = Space(0, "maze_six")
+    after_cave1 = Space(0, "maze_end")
+
+    game_board = Board("maze")
+    game_board.insert(after_cave, 1)
+    game_board.insert(cave_six, 1)
+    game_board.insert(cave_five, 1)
+    game_board.insert(cave_four, 1)
+    game_board.insert(cave_three, 1)
+    game_board.insert(cave_two, 1)
+    game_board.insert(cave_one, 1)
+    game_board.insert(before_cave, 1)
+    game_board.pop_id("middle")
+
+    game_board2 = Board("maze")
+    game_board2.insert(after_cave1, 1)
+    game_board2.insert(cave_six1, 1)
+    game_board2.insert(cave_five1, 1)
+    game_board2.insert(cave_four1, 1)
+    game_board2.insert(cave_three1, 1)
+    game_board2.insert(cave_two1, 1)
+    game_board2.insert(cave_one1, 1)
+    game_board2.insert(before_cave1, 1)
+    game_board2.pop_id("middle")
+
+    straight_board = Board("normal")
+    straight_board.insert(B)
+    straight_board.insert(C)
+    straight_board.insert(D)
+    straight_board.insert(E)
+    straight_board.insert(F)
+    straight_board.insert(G)
+    straight_board.insert(H)
+    straight_board.insert(I)
+    straight_board.pop_id("middle")
+
+    # bridge board spaces
+    bridgeA = Space()
+    bridgeB = Space()
+    bridgeC = Space(0, "fall")
+    bridgeD = Space()
+    bridgeE = Space()
+    bridgeF = Space(0, "fall")
+    bridgeG = Space(0, "fall")
+    bridgeH = Space()
+    bridgeI = Space()
+    bridgeJ = Space(0, "fall_start")
+    bridgeK = Space()
+    bridgeL = Space()
+    bridgeM = Space()
+    bridgeN = Space()
+    bridgeO = Space()
+    bridgeP = Space()
+    bridgeQ = Space()
+    bridgeR = Space(0, "path_join")
+    bridgeS = Space()
+
+    game_board3 = Board("bridge")
+    game_board3.insert(bridgeS)
+    game_board3.insert(bridgeR)
+    game_board3.insert(bridgeQ)
+    game_board3.insert(bridgeP)
+    game_board3.insert(bridgeO)
+    game_board3.insert(bridgeN)
+    game_board3.insert(bridgeM)
+    game_board3.insert(bridgeL)
+    game_board3.insert(bridgeK)
+    game_board3.insert(bridgeJ)
+    game_board3.insert(bridgeI)
+    game_board3.insert(bridgeH)
+    game_board3.insert(bridgeG)
+    game_board3.insert(bridgeF)
+    game_board3.insert(bridgeE)
+    game_board3.insert(bridgeD)
+    game_board3.insert(bridgeC)
+    game_board3.insert(bridgeB)
+    game_board3.insert(bridgeA)
+    game_board3.pop_id("middle")
+
+    # ---------- Players ----------
+    P_red = Player("Red")
+    P_red.set_position(game_board3.get_head()) 
+
+    # mutation, generating, and genetic algorithms
+    for i in range(0, 9):
+
+        straight_board.mutate()
+        game_board.mutate()
+        game_board2.mutate()
+        game_board3.mutate()
+
+    straight_board.reassign_id()
+    game_board3.reassign_id()
+    game_board3.add_tags()
+    game_board3.to_string()
+
+    game_board.combine(straight_board).to_string()
+    game_board.combine(game_board2).to_string()
+    game_board.combine(game_board3).to_string()
+
+    # play the game
+    while (P_red.get_position()).get_id() is not "end":
+        # Player rolls first
+        roll = P_red.player_roll()
+        print("Player location: ", P_red.get_position().get_id())
+        print("Player rolls: ", roll)
+        P_red.move(roll, P_red.get_position().get_board_id())
+
+    game_board.to_string()
+
+    print(game_board.calculate_fitness(BOARD_LENGTH, .4, .5, 10, 2))"""
+
     return game_board
 
 if __name__ == "__main__":
