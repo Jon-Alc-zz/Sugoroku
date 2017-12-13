@@ -27,13 +27,13 @@ class SugorokuForm extends React.Component{
 
 	handleSubmit(event){
 		$.ajax({
-			type:"POST",
-      		url: "../Python-Sugoroku/Python-Sugoroku/Sugoroku.py",
+			type:"GET",
+      		//url: "../Python-Sugoroku/Python-Sugoroku/Sugoroku.py",
+      		url:"Components-Sugoroku/test.py/test",
       		data:{
       			firstName:this.state.firstName,
       			lastName:this.state.lastName
       		},
-      		cache: false,
       		success: function(data) {
         		this.setState({
         			callBackData: data

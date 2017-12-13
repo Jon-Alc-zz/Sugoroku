@@ -30,7 +30,7 @@ class BoardSpace extends React.Component{
 				<img src="../data/rightArrow.png" width="40px" height="40px" className="spaceImg" 
 					style={{display: this.props.isEnd ? "none":"inline-block"}}></img>
 
-				<div className="tooltip" style={{left:this.state.xPos, top:this.state.yPos-30}}>{this.props.rule}</div>
+				<div className="myTooltip" style={{left:this.state.xPos, top:this.state.yPos-30}}>{this.props.rule}</div>
 			</div>
 		);
 	}
