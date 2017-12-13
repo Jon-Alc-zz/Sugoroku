@@ -382,10 +382,8 @@ class Board:
             self_walker=self_walker.get_forward()
             combined_board.insert(copy.deepcopy(self_walker), combined_board.get_length()-1)
         self_walker.set_id("begin")
-        finish_space=Space(0,"finish")
         #self_walker.set_forward(finish_space)
         combined_board.insert(copy.deepcopy(self_walker), combined_board.get_length()-1)
-        combined_board.insert(copy.deepcopy(finish_space), combined_board.get_length()-1)
         other_walker=other.get_head()
         other_walker=other_walker.get_forward()
         while other_walker.get_forward() is not None and other_walker.get_id() is not "end":
@@ -592,8 +590,7 @@ class Player:
     def move(self, roll, board_type):   
         if board_type == "normal":
             for i in range(roll):
-                if self.get_position().get_id() is "finish":
-                    self.set_position(self.get_position().get_forward())
+                if self.get_position().get_id() is "begin":
                     break
                 if self.get_position().get_id() is not "end":
                     self.set_position(self.get_position().get_forward())
@@ -666,7 +663,7 @@ class Player:
 
                     # search forward
                     while self.get_position().get_id() != tag:
-                        if self.get_position().get_forward() != None and self.get_position().get_id() is not "finish" and self.get_position().get_id() is not "end":
+                        if self.get_position().get_forward() != None and self.get_position().get_id() is not "begin" and self.get_position().get_id() is not "end":
                             self.set_position(self.get_position().get_forward())
                         else:
                             print("space", tag, "not found")
@@ -854,7 +851,7 @@ def main():
     
     game_board = normal_board.combine(normal_board2)
     game_board.to_string()"""
-    game_board=combine_best_subboards(initial_population, 3,2)
+    game_board=combine_best_subboards(initial_population, 3,1)
     game_board.to_string()
 
     """# ---------- Spaces ----------
