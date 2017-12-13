@@ -711,9 +711,10 @@ class Player:
                         break
 
 
-def combine_best_subboards(final_board_list, normal_count, maze_count):
+def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_count):
     n_count=normal_count
     m_count=maze_count
+    b_count=bridge_count
     combination_list=[]
     fitness_count=0
     final_list = sorted(final_board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
@@ -724,6 +725,8 @@ def combine_best_subboards(final_board_list, normal_count, maze_count):
         n_count-=1
     elif base_board.get_board_id() is "maze":
         m_count-=1
+    elif base_board.get_board_id() is "bridge":
+        b_count-=1
         
     for i in range(0, n_count):
         for board in final_list:
@@ -736,6 +739,14 @@ def combine_best_subboards(final_board_list, normal_count, maze_count):
     for i in range(0, m_count):
         for board in final_list:
             if board.get_board_id() is "maze":
+                combination_list.append(board)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                final_list.remove(board)
+                break
+
+    for i in range(0, b_count):
+        for board in final_list:
+            if board.get_board_id() is "bridge":
                 combination_list.append(board)
                 fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
                 final_list.remove(board)
@@ -754,13 +765,19 @@ def generate_successors(board_list):
     potential_list = sorted(board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
     new_list=[]
     for i in range(0,10):
-        if potential_list[i].get_board_id() is not "maze" and potential_list[i+1].get_board_id() is not "maze":
+        if potential_list[i].get_board_id() is "normal" and potential_list[i+1].get_board_id() is "normal":
             children = potential_list[i].generate_children(potential_list[i+1])
             new_list.append(children[0])
             new_list.append(children[1])
             
     for board in potential_list:
         if board.get_board_id() is "maze":
+            board.mutate()
+            new_list.append(board)
+
+    for board in potential_list:
+        if board.get_board_id() is "bridge":
+            board.mutate()
             new_list.append(board)
             
     return new_list
@@ -809,7 +826,21 @@ def main():
         maze_board.insert(Space(0, "maze_one"), 1)
         maze_board.insert(Space(0, "maze_zero"), 1)
         maze_board.pop_id("middle")
+    for i in range(0,5):
+        initial_population.insert(0, Board("bridge"))
+        bridge_board = initial_population[0]
+        bridge_board.pop_id("middle")
+        for i in range(0,15):
+            bridge_board.insert(Space())
+        bridge_board.insert(Space(0, "fall"), 3)
+        bridge_board.insert(Space(0, "fall"), 6)
+        bridge_board.insert(Space(0, "fall"), 7)
+        bridge_board.insert(Space(0, "fall_start"), 10)
+        bridge_board.insert(Space(0, "path_join"), 15)
 
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
     population_limit=10
     for i in range(0, population_limit):
         next_population=generate_successors(initial_population)
@@ -851,7 +882,8 @@ def main():
     
     game_board = normal_board.combine(normal_board2)
     game_board.to_string()"""
-    game_board=combine_best_subboards(initial_population, 3,1)
+    game_board=combine_best_subboards(initial_population, 3,1,1)
+    
     game_board.to_string()
 
     """# ---------- Spaces ----------
