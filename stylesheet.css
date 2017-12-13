@@ -10,6 +10,10 @@ body{
 	font-family: 'Quicksand', sans-serif;
 }
 
+form{
+	position:relative;
+}
+
 .bodyText{
 	position:relative;
 	margin:auto;
@@ -102,5 +106,5 @@ body{
 
 #sugorokuBoardButton{
 	position:relative;
-	top:-20px;
+	/*top:-20px;*/
 }

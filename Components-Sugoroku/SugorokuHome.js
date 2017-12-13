@@ -42,9 +42,11 @@ class SugorokuHome extends React.Component{
 				</div>
 
 				<h1>Example Boards</h1>
-					<JSONParser 
-						setJSONFile={this.setJSONFile}
-						setSpaceKeys={this.setSpaceKeys} />
+				<SugorokuForm />
+
+				<JSONParser 
+					setJSONFile={this.setJSONFile}
+					setSpaceKeys={this.setSpaceKeys} />
 
 				<div className="textBox">
 				<BoardDisplay 
