@@ -20,9 +20,18 @@ class BoardSpace extends React.Component{
 	render(){
 		var pic = <img src="../data/space.png" width="50px" height="50px" className="spaceImg"></img>
 
-		if(this.props.isEnd || this.props.isStart){
+		if(this.props.isStart){
+			pic = <img src="../data/start.png" width="50px" height="50px" className="spaceImg"></img>
+		}
+
+		if(this.props.isEnd){
+			pic = <img src="../data/end.png" width="50px" height="50px" className="spaceImg"></img>
+		}
+
+		if(this.props.isCheckpoint){
 			pic = <img src="../data/checkpoint.png" width="50px" height="50px" className="spaceImg"></img>
 		}
+
 		return(
 			<div className="space">
 				{pic}

@@ -56,9 +56,10 @@ form{
 }
 
 .spaceID{
-	position:relative;
+	position:absolute;
 	z-index: 10;
-	left:-35px;
+	left:9px;
+	top:12px;
 	/*top:-20px;*/
 }
 
