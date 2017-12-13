@@ -7,13 +7,24 @@ class JSONParser extends React.Component{
 			author: "",
 			dice: "",
 			numSpaces: 0,
-			spaceKeys: []
+			spaceKeys: [],
+            currentBoard:"--"
 		};
 
 		this.parser = this.parser.bind(this);
+        this.showList = this.showList.bind(this);
+        this.changeName = this.changeName.bind(this);
 	}
 
-	parser(){
+    changeName(name, url){
+        this.setState({
+            currentBoard: name
+        },()=>{
+            this.parser(url);
+        });
+    }
+
+	parser(url){
 		var xmlHttp = new XMLHttpRequest();
 
     	xmlHttp.onreadystatechange = function() { 
@@ -45,15 +56,44 @@ class JSONParser extends React.Component{
         	}
         }.bind(this);
 
-        xmlHttp.open("GET", "data/JonTestFile.json", true);
+        xmlHttp.open("GET", url, true);
         xmlHttp.send(null);
 	}
+
+    showList(){
+        document.getElementById("dropdownList").classList.toggle("show");
+    }
 
 	render(){
 		return(
 			<div id="sugorokuBoardButton">
-				<button onClick={this.parser}>Click Ryan</button>
+                <div id="currentDropdown" onClick={this.showList}>
+                    {this.state.currentBoard}
+
+                    <i className="glyphicon glyphicon-menu-down dropdownIcon"></i>
+                </div>
+
+                <div id="dropdownList" className="dropdownContent">
+                    <a href="#">--</a>
+                    <a href="#" onClick={()=>this.changeName("Board 1", "Python-Sugoroku/Python-Sugoroku/input_board.json")}>
+                        Board 1
+                    </a>
+                    <a href="#">Afrikaans</a>
+                </div>
 			</div>
 		);
 	}
+}
+
+window.onclick = function(event) {
+    if (!event.target.matches('#currentDropdown')) {
+        var dropdowns = document.getElementsByClassName("dropdownContent");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
 }

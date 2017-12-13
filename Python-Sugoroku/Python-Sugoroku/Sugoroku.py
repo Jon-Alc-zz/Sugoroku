@@ -13,6 +13,10 @@ import random
 import copy
 
 BOARD_LENGTH = 15
+RANDOM_MULTIPLIER = .3
+LENGTH_MULTIPLIER = .4
+MAZE_MULTIPLIER = 5
+TURN_COUNT=10
 
 # Space is a place on the board that a Player can land on.
 class Space:
@@ -216,10 +220,10 @@ class Board:
                 random_space = random.choice(space_list)
                 self.insert(random_space, 1)
                 space_list.remove(random_space)
-            self.pop_id("maze_zero")
-            self.pop_id("maze_end")
-            self.insert(Space(0,"maze_zero"),1)
-            self.insert(Space(0,"maze_end"),8)
+            self.pop_id("m1")
+            self.pop_id("m8")
+            self.insert(Space(0,"m1"),1)
+            self.insert(Space(0,"m8"),8)
         elif start_index != -1 and end_index == 100000:
             for i in range(1, start_index):
                 index+=1
@@ -538,7 +542,7 @@ class Board:
 
     def calculate_fitness(self, length, length_m=0, random_m=0, ideal_count=10, maze_m=0):
         fitness=15
-        
+        random_scaling = 2
         if self.get_board_id() is "normal":
             deviation = abs(length - self.get_length()) #length test
             fitness-=length_m * deviation
@@ -546,7 +550,8 @@ class Board:
             rand_count=0 #random test
             while traveller.get_id() is not "end":
                 if traveller.is_random_space() is True:
-                    rand_count+=1
+                    rand_count+=random_scaling
+                    random_scaling = random_scaling*.9
                 traveller=traveller.get_forward()
             fitness+= random_m * rand_count
             
@@ -634,48 +639,48 @@ class Player:
                 self.set_position(self.get_position().get_forward())
             # -----------------------------------------------------
 
-            elif current_space_id == "maze_zero": # entrance: roll to decide which tile you move to
+            elif current_space_id == "m1": # entrance: roll to decide which tile you move to
                 roll_normally = True
 
-            elif current_space_id == "maze_one": # one: even = maze_four, odd = exit
+            elif current_space_id == "m2": # one: even = m5, odd = exit
 
                 if roll % 2 == 0:
-                    tag = "maze_four"
+                    tag = "m5"
                 else:
-                    tag = "maze_end"
+                    tag = "m8"
 
-            elif current_space_id == "maze_two": # two: roll and move to that maze tile
+            elif current_space_id == "m3": # two: roll and move to that maze tile
                 
-                tag = "maze_zero"
+                tag = "m1"
                 roll_normally = True
 
-            elif current_space_id == "maze_three": # three: exit (2, 5), 2 (anything else)
+            elif current_space_id == "m4": # three: exit (2, 5), 2 (anything else)
 
                 if roll == 2 or roll == 5:
-                    tag = "maze_end"
+                    tag = "m8"
                 else:
-                    tag = "maze_two"
+                    tag = "m3"
 
-            elif current_space_id == "maze_four": # four: any other tile (1-3, 5-6) or start (4)
+            elif current_space_id == "m5": # four: any other tile (1-3, 5-6) or start (4)
 
                 if roll == 4: # roll 4 sends to start
                     tag = "start"
                 else:
-                    tag = "maze_zero"
+                    tag = "m1"
                     roll_normally = True
 
-            elif current_space_id == "maze_five": # adapting five, since combat doesn't exist: 5 exits, anything else stays
+            elif current_space_id == "m6": # adapting five, since combat doesn't exist: 5 exits, anything else stays
 
                 if roll == 5:
-                    tag = "maze_end"
+                    tag = "m8"
 
-            elif current_space_id == "maze_six": # six: exit or itself, must roll at least 10 with 3 rolls
+            elif current_space_id == "m7": # six: exit or itself, must roll at least 10 with 3 rolls
 
                 roll_two = self.player_roll()
                 roll_three = self.player_roll()
                 print("Rolls 2 and 3: ", roll_two, roll_three)
                 if roll + roll_two + roll_three >= 10:
-                    tag = "maze_end"
+                    tag = "m8"
 
             else: # outside of the maze
                 roll_normally = True
@@ -740,9 +745,9 @@ def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_co
     b_count=bridge_count
     combination_list=[]
     fitness_count=0
-    final_list = sorted(final_board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
+    final_list = sorted(final_board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER), reverse=True)
     base_board = random.choice(final_list)
-    fitness_count+=base_board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+    fitness_count+=base_board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER)
 
     if base_board.get_board_id() is "normal":
         n_count-=1
@@ -755,7 +760,7 @@ def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_co
         for board in final_list:
             if board.get_board_id() is "normal":
                 combination_list.append(board)
-                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER)
                 final_list.remove(board)
                 break
 
@@ -763,7 +768,7 @@ def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_co
         for board in final_list:
             if board.get_board_id() is "maze":
                 combination_list.append(board)
-                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER)
                 final_list.remove(board)
                 break
 
@@ -771,21 +776,23 @@ def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_co
         for board in final_list:
             if board.get_board_id() is "bridge":
                 combination_list.append(board)
-                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER)
                 final_list.remove(board)
                 break
-
+            
+    last_choice=base_board
     while len(combination_list) > 0:
         append_board=random.choice(combination_list)
-        base_board=base_board.combine(append_board)
-        combination_list.remove(append_board)
+        if random.random() < .33 or last_choice.get_board_id() is not append_board.get_board_id():
+            base_board=base_board.combine(append_board)
+            combination_list.remove(append_board)
 
     return base_board
         
         
 
 def generate_successors(board_list):
-    potential_list = sorted(board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
+    potential_list = sorted(board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, LENGTH_MULTIPLIER, RANDOM_MULTIPLIER, TURN_COUNT, MAZE_MULTIPLIER), reverse=True)
     new_list=[]
     for i in range(0,10):
         if potential_list[i].get_board_id() is "normal" and potential_list[i+1].get_board_id() is "normal":
@@ -840,14 +847,14 @@ def main():
     for i in range(0,5):
         initial_population.insert(0, Board("maze"))
         maze_board=initial_population[0]
-        maze_board.insert(Space(0, "maze_end"), 1)
-        maze_board.insert(Space(0, "maze_six"), 1)
-        maze_board.insert(Space(0, "maze_five"), 1)
-        maze_board.insert(Space(0, "maze_four"), 1)
-        maze_board.insert(Space(0, "maze_three"), 1)
-        maze_board.insert(Space(0, "maze_two"), 1)
-        maze_board.insert(Space(0, "maze_one"), 1)
-        maze_board.insert(Space(0, "maze_zero"), 1)
+        maze_board.insert(Space(0, "m8"), 1)
+        maze_board.insert(Space(0, "m7"), 1)
+        maze_board.insert(Space(0, "m6"), 1)
+        maze_board.insert(Space(0, "m5"), 1)
+        maze_board.insert(Space(0, "m4"), 1)
+        maze_board.insert(Space(0, "m3"), 1)
+        maze_board.insert(Space(0, "m2"), 1)
+        maze_board.insert(Space(0, "m1"), 1)
         maze_board.pop_id("middle")
     for i in range(0,5):
         initial_population.insert(0, Board("bridge"))
@@ -866,10 +873,9 @@ def main():
         next_population=generate_successors(initial_population)
         initial_population=next_population
 
-    game_board=combine_best_subboards(initial_population, 3,1,1)
+    game_board=combine_best_subboards(initial_population, random.randint(1,3),random.randint(1,3),random.randint(1,3))
     
     game_board.to_string()
-
     return game_board
 
 if __name__ == "__main__":
