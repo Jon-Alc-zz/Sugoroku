@@ -255,34 +255,48 @@ class Board:
             
     # change number of spaces in bridge board
     def modify_bridge_spaces(self):
+        if random.random() <.95:
+            """# go through board and remove specially tagged spaces
+            pointer = self.get_head().get_forward()
+            back_pointer = self.get_head()
 
-        # go through board and remove specially tagged spaces
-        pointer = self.get_head().get_forward()
-        back_pointer = self.get_head()
+            while pointer.get_id() != "end":
 
-        while pointer.get_id() != "end":
+                if pointer.get_id() != "": # delete tagged spaces, including "end"
+                    temp = pointer
+                    pointer = pointer.get_forward()
+                    back_pointer.set_forward(pointer)
+                    del(temp)
 
-            if pointer.get_id() != "": # delete tagged spaces, including "end"
-                temp = pointer
-                pointer = pointer.get_forward()
-                back_pointer.set_forward(pointer)
-                del(temp)
+                else:
+                    pointer = pointer.get_forward() # move both pointers forward
+                    back_pointer = back_pointer.get_forward()
 
-            else:
-                pointer = pointer.get_forward() # move both pointers forward
-                back_pointer = back_pointer.get_forward()
+            self.update_length()
 
-        self.update_length()
+            # modify board length
+            while self.get_length() < 15: # bridge should be 15-25 spaces
+                self.insert(Space())
 
-        # modify board length
-        while self.get_length() < 15: # bridge should be 15-25 spaces
-            self.insert(Space())
+            for i in range(random.randrange(0, 5)): 
+                self.insert(Space())
 
-        for i in range(random.randrange(0, 5)): 
-            self.insert(Space())
-
-        while self.get_length() > 20:
-            self.pop(self.get_length() - 1)
+            while self.get_length() > 20:
+                self.pop(self.get_length() - 1)"""
+            traveller=self.get_head().get_forward()
+            delete_count=0
+            index=1
+            while traveller.get_id() is not "end":
+                if traveller.get_id() is "" and random.random() < .1:
+                    self.pop(index)
+                    delete_count+=1
+                    index-=1
+                traveller=traveller.get_forward()
+                index+=1
+            if delete_count>0:
+                for i in range(0, random.randint(delete_count-1, delete_count+1)):
+                    self.insert(Space(), random.randint(1, self.get_length()-1))
+            
 
     # add tags to bridge board type
     def add_tags(self):
@@ -536,6 +550,7 @@ class Board:
         P_test.set_position(self.get_head())
         P_test2=Player("test2")
         P_test2.set_position(self.get_head())
+        
         turn_count=1
         turn_count2=1
         while (P_test.get_position()).get_id() is not "end":
@@ -563,6 +578,7 @@ class Board:
             P_test2.move(roll, P_test2.get_position().get_board_id())
             turn_count2+=1
         fitness-=abs(ideal_count - ((turn_count+turn_count2)/2))
+        
         return fitness
             
 
@@ -689,7 +705,7 @@ class Player:
             # movement is normal
             for i in range(roll):
 
-                if self.get_position().get_forward() != None:
+                if self.get_position().get_forward() != None and self.get_position().get_id() is not "begin" and self.get_position().get_id() is not "end":
                     self.set_position(self.get_position().get_forward())
 
             # "fall" spaces jump to "fall_start"
@@ -711,9 +727,10 @@ class Player:
                         break
 
 
-def combine_best_subboards(final_board_list, normal_count, maze_count):
+def combine_best_subboards(final_board_list, normal_count, maze_count, bridge_count):
     n_count=normal_count
     m_count=maze_count
+    b_count=bridge_count
     combination_list=[]
     fitness_count=0
     final_list = sorted(final_board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
@@ -724,6 +741,8 @@ def combine_best_subboards(final_board_list, normal_count, maze_count):
         n_count-=1
     elif base_board.get_board_id() is "maze":
         m_count-=1
+    elif base_board.get_board_id() is "bridge":
+        b_count-=1
         
     for i in range(0, n_count):
         for board in final_list:
@@ -736,6 +755,14 @@ def combine_best_subboards(final_board_list, normal_count, maze_count):
     for i in range(0, m_count):
         for board in final_list:
             if board.get_board_id() is "maze":
+                combination_list.append(board)
+                fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
+                final_list.remove(board)
+                break
+
+    for i in range(0, b_count):
+        for board in final_list:
+            if board.get_board_id() is "bridge":
                 combination_list.append(board)
                 fitness_count+=board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0)
                 final_list.remove(board)
@@ -754,13 +781,19 @@ def generate_successors(board_list):
     potential_list = sorted(board_list, key=lambda board: board.calculate_fitness(BOARD_LENGTH, .3, .4, 10, 0), reverse=True)
     new_list=[]
     for i in range(0,10):
-        if potential_list[i].get_board_id() is not "maze" and potential_list[i+1].get_board_id() is not "maze":
+        if potential_list[i].get_board_id() is "normal" and potential_list[i+1].get_board_id() is "normal":
             children = potential_list[i].generate_children(potential_list[i+1])
             new_list.append(children[0])
             new_list.append(children[1])
             
     for board in potential_list:
         if board.get_board_id() is "maze":
+            board.mutate()
+            new_list.append(board)
+
+    for board in potential_list:
+        if board.get_board_id() is "bridge":
+            board.mutate()
             new_list.append(board)
             
     return new_list
@@ -809,7 +842,32 @@ def main():
         maze_board.insert(Space(0, "m2"), 1)
         maze_board.insert(Space(0, "m1"), 1)
         maze_board.pop_id("middle")
+    for i in range(0,5):
+        initial_population.insert(0, Board("bridge"))
+        bridge_board = initial_population[0]
+        bridge_board.pop_id("middle")
+        for i in range(0,15):
+            bridge_board.insert(Space())
+        bridge_board.insert(Space(0, "fall"), 3)
+        bridge_board.insert(Space(0, "fall"), 6)
+        bridge_board.insert(Space(0, "fall"), 7)
+        bridge_board.insert(Space(0, "fall_start"), 10)
+        bridge_board.insert(Space(0, "path_join"), 15)
 
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    initial_population[0].mutate()
+    initial_population[0].to_string()
+    
     population_limit=10
     for i in range(0, population_limit):
         next_population=generate_successors(initial_population)
@@ -851,7 +909,8 @@ def main():
     
     game_board = normal_board.combine(normal_board2)
     game_board.to_string()"""
-    game_board=combine_best_subboards(initial_population, 3,1)
+    game_board=combine_best_subboards(initial_population, 3,1,1)
+    
     game_board.to_string()
 
     """# ---------- Spaces ----------
