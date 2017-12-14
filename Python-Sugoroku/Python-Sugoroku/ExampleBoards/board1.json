@@ -1,0 +1,332 @@
+{
+    "key": "value",
+    "title": "Generated Sugoroku Board",
+    "author": "Team Sugoroku - CMPM 146",
+    "date": "2017",
+    "publisher": "Sugoroku Board Generator Program",
+    "dice": "D6",
+    "start": "idk yet",
+    "goal": "idk yet",
+    "transitions": {
+        "start": {
+            "backward": null,
+            "forward": "m1a",
+            "rule": 0
+        },
+        "m1a": {
+            "backward": "start",
+            "forward": "m6a",
+            "rule": 0
+        },
+        "m6a": {
+            "backward": "m1a",
+            "forward": "m4a",
+            "rule": 0
+        },
+        "m4a": {
+            "backward": "m6a",
+            "forward": "m3a",
+            "rule": 0
+        },
+        "m3a": {
+            "backward": "m4a",
+            "forward": "m7a",
+            "rule": 0
+        },
+        "m7a": {
+            "backward": "m3a",
+            "forward": "m5a",
+            "rule": 0
+        },
+        "m5a": {
+            "backward": "m7a",
+            "forward": "m2a",
+            "rule": 0
+        },
+        "m2a": {
+            "backward": "m5a",
+            "forward": "m8a",
+            "rule": 0
+        },
+        "m8a": {
+            "backward": "m2a",
+            "forward": "b",
+            "rule": 0
+        },
+        "b": {
+            "backward": "m8a",
+            "forward": "m1b",
+            "rule": "checkpoint"
+        },
+        "m1b": {
+            "backward": "b",
+            "forward": "m6b",
+            "rule": 0
+        },
+        "m6b": {
+            "backward": "m1b",
+            "forward": "m3b",
+            "rule": 0
+        },
+        "m3b": {
+            "backward": "m6b",
+            "forward": "m4b",
+            "rule": 0
+        },
+        "m4b": {
+            "backward": "m3b",
+            "forward": "m5b",
+            "rule": 0
+        },
+        "m5b": {
+            "backward": "m4b",
+            "forward": "m7b",
+            "rule": 0
+        },
+        "m7b": {
+            "backward": "m5b",
+            "forward": "m2b",
+            "rule": 0
+        },
+        "m2b": {
+            "backward": "m7b",
+            "forward": "m8b",
+            "rule": 0
+        },
+        "m8b": {
+            "backward": "m2b",
+            "forward": "c",
+            "rule": 0
+        },
+        "c": {
+            "backward": "m8b",
+            "forward": "1c",
+            "rule": "checkpoint"
+        },
+        "1c": {
+            "backward": "c",
+            "forward": "Fc1",
+            "rule": 0
+        },
+        "Fc1": {
+            "backward": "1c",
+            "forward": "Fc2",
+            "rule": "Fall to fall start (FSc)"
+        },
+        "Fc2": {
+            "backward": "Fc2",
+            "forward": "Fc3",
+            "rule": "Fall to fall start (FSc)"
+        },
+        "Fc3": {
+            "backward": "Fc3",
+            "forward": "2c",
+            "rule": "Fall to fall start (FSc)"
+        },
+        "2c": {
+            "backward": "Fc3",
+            "forward": "FSc",
+            "rule": 0
+        },
+        "FSc": {
+            "backward": "2c",
+            "forward": "3c",
+            "rule": "If you haven't fallen, go to path join (PJc)"
+        },
+        "3c": {
+            "backward": "FSc",
+            "forward": "4c",
+            "rule": 0
+        },
+        "4c": {
+            "backward": "3c",
+            "forward": "5c",
+            "rule": 0
+        },
+        "5c": {
+            "backward": "4c",
+            "forward": "6c",
+            "rule": 0
+        },
+        "6c": {
+            "backward": "5c",
+            "forward": "7c",
+            "rule": 0
+        },
+        "7c": {
+            "backward": "6c",
+            "forward": "8c",
+            "rule": 0
+        },
+        "8c": {
+            "backward": "7c",
+            "forward": "9c",
+            "rule": 0
+        },
+        "9c": {
+            "backward": "8c",
+            "forward": "10c",
+            "rule": 0
+        },
+        "10c": {
+            "backward": "9c",
+            "forward": "PJc",
+            "rule": 0
+        },
+        "PJc": {
+            "backward": "10c",
+            "forward": "11c",
+            "rule": "Path join"
+        },
+        "11c": {
+            "backward": "PJc",
+            "forward": "12c",
+            "rule": 0
+        },
+        "12c": {
+            "backward": "11c",
+            "forward": "13c",
+            "rule": 0
+        },
+        "13c": {
+            "backward": "12c",
+            "forward": "14c",
+            "rule": 0
+        },
+        "14c": {
+            "backward": "13c",
+            "forward": "15c",
+            "rule": 0
+        },
+        "15c": {
+            "backward": "14c",
+            "forward": "16c",
+            "rule": 0
+        },
+        "16c": {
+            "backward": "15c",
+            "forward": "17c",
+            "rule": 0
+        },
+        "17c": {
+            "backward": "16c",
+            "forward": "d",
+            "rule": 0
+        },
+        "d": {
+            "backward": "17c",
+            "forward": "1d",
+            "rule": "checkpoint"
+        },
+        "1d": {
+            "backward": "d",
+            "forward": "2d",
+            "rule": "If you roll a 2 or 6, move forward 1. Else, move back 2!"
+        },
+        "2d": {
+            "backward": "1d",
+            "forward": "3d",
+            "rule": "If you roll a 1, move forward 3. Else, move back 3!"
+        },
+        "3d": {
+            "backward": "2d",
+            "forward": "4d",
+            "rule": "If you roll a 2, move forward 3. Else, move back 4!"
+        },
+        "4d": {
+            "backward": "3d",
+            "forward": "5d",
+            "rule": "If you roll a 6, 2, 5, 1, or 3, move forward 1. Else, move back 2!"
+        },
+        "5d": {
+            "backward": "4d",
+            "forward": "6d",
+            "rule": 0
+        },
+        "6d": {
+            "backward": "5d",
+            "forward": "7d",
+            "rule": "If you roll a 3, 6, or 2, move forward 2. Else, move back 1!"
+        },
+        "7d": {
+            "backward": "6d",
+            "forward": "8d",
+            "rule": 0
+        },
+        "8d": {
+            "backward": "7d",
+            "forward": "9d",
+            "rule": 0
+        },
+        "9d": {
+            "backward": "8d",
+            "forward": "10d",
+            "rule": "If you roll a 5, move forward 4. Else, move back 3!"
+        },
+        "10d": {
+            "backward": "9d",
+            "forward": "11d",
+            "rule": 0
+        },
+        "11d": {
+            "backward": "10d",
+            "forward": "12d",
+            "rule": 0
+        },
+        "12d": {
+            "backward": "11d",
+            "forward": "e",
+            "rule": 0
+        },
+        "e": {
+            "backward": "12d",
+            "forward": "1e",
+            "rule": "checkpoint"
+        },
+        "1e": {
+            "backward": "e",
+            "forward": "2e",
+            "rule": "If you roll a 1, move forward 4. Else, move back 1!"
+        },
+        "2e": {
+            "backward": "1e",
+            "forward": "3e",
+            "rule": 0
+        },
+        "3e": {
+            "backward": "2e",
+            "forward": "4e",
+            "rule": 0
+        },
+        "4e": {
+            "backward": "3e",
+            "forward": "5e",
+            "rule": "If you roll a 4, move forward 4. Else, move back 2!"
+        },
+        "5e": {
+            "backward": "4e",
+            "forward": "6e",
+            "rule": "If you roll a 6, move forward 4. Else, move back 3!"
+        },
+        "6e": {
+            "backward": "5e",
+            "forward": "7e",
+            "rule": "If you roll a 5, move forward 2. Else, move back 3!"
+        },
+        "7e": {
+            "backward": "6e",
+            "forward": "8e",
+            "rule": 0
+        },
+        "8e": {
+            "backward": "7e",
+            "forward": "end",
+            "rule": 0
+        },
+        "end": {
+            "backward": "8e",
+            "forward": null,
+            "rule": 0
+        }
+    }
+}

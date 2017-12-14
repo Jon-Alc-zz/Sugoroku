@@ -3,7 +3,7 @@ import Sugoroku
 import random
 
 def main():
-    path = './'
+    path = './ExampleBoards'
     fileName = 'board'
     filePathNameWExt = './' + path + '/' + fileName + str(random.randint(10,99)) + '.json'
     dataFile = open(filePathNameWExt,"w")
@@ -68,7 +68,7 @@ def main():
         
 
         #spaces[i].set_id(str(spaces[i].get_id()) + currentLetter)
-        #print(id)
+        print(id)
         # set immediate next/previous nodes
 
         # set the rules, from traverse_params (format: [good rolls], good roll result, failure result)
