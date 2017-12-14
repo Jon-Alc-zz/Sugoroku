@@ -1,0 +1,272 @@
+{
+    "key": "value",
+    "title": "Generated Sugoroku Board",
+    "author": "Team Sugoroku - CMPM 146",
+    "date": "2017",
+    "publisher": "Sugoroku Board Generator Program",
+    "dice": "D6",
+    "start": "idk yet",
+    "goal": "idk yet",
+    "transitions": {
+        "start": {
+            "backward": null,
+            "forward": "1a",
+            "rule": 0
+        },
+        "1a": {
+            "backward": "start",
+            "forward": "2a",
+            "rule": 0
+        },
+        "2a": {
+            "backward": "1a",
+            "forward": "3a",
+            "rule": 0
+        },
+        "3a": {
+            "backward": "2a",
+            "forward": "4a",
+            "rule": 0
+        },
+        "4a": {
+            "backward": "3a",
+            "forward": "5a",
+            "rule": 0
+        },
+        "5a": {
+            "backward": "4a",
+            "forward": "Fa1",
+            "rule": 0
+        },
+        "Fa1": {
+            "backward": "5a",
+            "forward": "6a",
+            "rule": "Fall to fall start (FSa)"
+        },
+        "6a": {
+            "backward": "Fa1",
+            "forward": "7a",
+            "rule": 0
+        },
+        "7a": {
+            "backward": "6a",
+            "forward": "Fa2",
+            "rule": 0
+        },
+        "Fa2": {
+            "backward": "7a",
+            "forward": "Fa3",
+            "rule": "Fall to fall start (FSa)"
+        },
+        "Fa3": {
+            "backward": "Fa3",
+            "forward": "8a",
+            "rule": "Fall to fall start (FSa)"
+        },
+        "8a": {
+            "backward": "Fa3",
+            "forward": "9a",
+            "rule": 0
+        },
+        "9a": {
+            "backward": "8a",
+            "forward": "FSa",
+            "rule": 0
+        },
+        "FSa": {
+            "backward": "9a",
+            "forward": "10a",
+            "rule": "If you haven't fallen, go to path join (PJa)"
+        },
+        "10a": {
+            "backward": "FSa",
+            "forward": "11a",
+            "rule": 0
+        },
+        "11a": {
+            "backward": "10a",
+            "forward": "12a",
+            "rule": 0
+        },
+        "12a": {
+            "backward": "11a",
+            "forward": "13a",
+            "rule": 0
+        },
+        "13a": {
+            "backward": "12a",
+            "forward": "14a",
+            "rule": 0
+        },
+        "14a": {
+            "backward": "13a",
+            "forward": "15a",
+            "rule": 0
+        },
+        "15a": {
+            "backward": "14a",
+            "forward": "PJa",
+            "rule": 0
+        },
+        "PJa": {
+            "backward": "15a",
+            "forward": "16a",
+            "rule": "Path join"
+        },
+        "16a": {
+            "backward": "PJa",
+            "forward": "17a",
+            "rule": 0
+        },
+        "17a": {
+            "backward": "16a",
+            "forward": "b",
+            "rule": 0
+        },
+        "b": {
+            "backward": "17a",
+            "forward": "m1b",
+            "rule": "checkpoint"
+        },
+        "m1b": {
+            "backward": "b",
+            "forward": "m4b",
+            "rule": 0
+        },
+        "m4b": {
+            "backward": "m1b",
+            "forward": "m2b",
+            "rule": 0
+        },
+        "m2b": {
+            "backward": "m4b",
+            "forward": "m7b",
+            "rule": 0
+        },
+        "m7b": {
+            "backward": "m2b",
+            "forward": "m6b",
+            "rule": 0
+        },
+        "m6b": {
+            "backward": "m7b",
+            "forward": "m5b",
+            "rule": 0
+        },
+        "m5b": {
+            "backward": "m6b",
+            "forward": "m3b",
+            "rule": 0
+        },
+        "m3b": {
+            "backward": "m5b",
+            "forward": "m8b",
+            "rule": 0
+        },
+        "m8b": {
+            "backward": "m3b",
+            "forward": "c",
+            "rule": 0
+        },
+        "c": {
+            "backward": "m8b",
+            "forward": "1c",
+            "rule": "checkpoint"
+        },
+        "1c": {
+            "backward": "c",
+            "forward": "2c",
+            "rule": 0
+        },
+        "2c": {
+            "backward": "1c",
+            "forward": "3c",
+            "rule": 0
+        },
+        "3c": {
+            "backward": "2c",
+            "forward": "4c",
+            "rule": 0
+        },
+        "4c": {
+            "backward": "3c",
+            "forward": "5c",
+            "rule": 0
+        },
+        "5c": {
+            "backward": "4c",
+            "forward": "6c",
+            "rule": "If you roll a 2, 1, 5, or 3, move forward 3. Else, move back 4!"
+        },
+        "6c": {
+            "backward": "5c",
+            "forward": "7c",
+            "rule": 0
+        },
+        "7c": {
+            "backward": "6c",
+            "forward": "8c",
+            "rule": 0
+        },
+        "8c": {
+            "backward": "7c",
+            "forward": "9c",
+            "rule": 0
+        },
+        "9c": {
+            "backward": "8c",
+            "forward": "d",
+            "rule": 0
+        },
+        "d": {
+            "backward": "9c",
+            "forward": "m1d",
+            "rule": "checkpoint"
+        },
+        "m1d": {
+            "backward": "d",
+            "forward": "m6d",
+            "rule": 0
+        },
+        "m6d": {
+            "backward": "m1d",
+            "forward": "m7d",
+            "rule": 0
+        },
+        "m7d": {
+            "backward": "m6d",
+            "forward": "m2d",
+            "rule": 0
+        },
+        "m2d": {
+            "backward": "m7d",
+            "forward": "m5d",
+            "rule": 0
+        },
+        "m5d": {
+            "backward": "m2d",
+            "forward": "m3d",
+            "rule": 0
+        },
+        "m3d": {
+            "backward": "m5d",
+            "forward": "m4d",
+            "rule": 0
+        },
+        "m4d": {
+            "backward": "m3d",
+            "forward": "m8d",
+            "rule": 0
+        },
+        "m8d": {
+            "backward": "m4d",
+            "forward": "end",
+            "rule": 0
+        },
+        "end": {
+            "backward": "m8d",
+            "forward": null,
+            "rule": 0
+        }
+    }
+}
