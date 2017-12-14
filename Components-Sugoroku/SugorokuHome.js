@@ -26,19 +26,18 @@ class SugorokuHome extends React.Component{
 	render(){
 		return(
 			<div className="bodyText">
-				<h1>About Sugoroku</h1>
+				<h1>Sugoroku</h1>
 				<div className="textBox">
 					Sugoroku is a genre of board games with 10 or more tiles that connect to form a completed story.
 					Players move around the board in 2 ways: along a designated path with dice rolls or to specific 
 					squares following the instructions on the square they landed on. You can play these types of game 
 					with as many people as you want. You can even play by yourself.
+                    <p>
+					These games are played with a 6 sided dice.<br></br>
+					Seven example boards were procedurally generated with our algorithm. You can view them below.</p>
 				</div>
 
-				<h1>About this Site</h1>
-				<div className="textBox">
-					These games are played with a 6 sided dice.<br></br>
-					Seven example boards were procedurally generated with our algorithm. You can view them below.
-				</div>
+				
 
 				<h1>Example Boards</h1>
 

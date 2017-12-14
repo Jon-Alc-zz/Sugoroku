@@ -19,7 +19,7 @@ class Navbar extends React.Component{
 						<Link to="algorithm" className="routerLink" activeClassName="active" className="link" id="algorithm">Algorithm</Link>
 					</div>
 					<div className="navButton">
-						<Link to="about" className="routerLink" activeClassName="active" className="link" id="about">About Us</Link>
+						<Link to="about" className="routerLink" activeClassName="active" className="link" id="about">About</Link>
 					</div>
 				</div>
 			</div>
