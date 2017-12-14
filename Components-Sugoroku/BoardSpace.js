@@ -32,6 +32,10 @@ class BoardSpace extends React.Component{
 			pic = <img src="../data/checkpoint.png" width="50px" height="50px" className="spaceImg"></img>
 		}
 
+		if(this.props.isJump){
+			pic = <img src="../data/jump.png" width="50px" height="50px" className="spaceImg"></img>
+		}
+
 		return(
 			<div className="space">
 				{pic}
@@ -39,7 +43,13 @@ class BoardSpace extends React.Component{
 				<img src="../data/rightArrow.png" width="40px" height="40px" className="spaceImg" 
 					style={{display: this.props.isEnd ? "none":"inline-block"}}></img>
 
-				<div className="myTooltip" style={{left:this.state.xPos, top:this.state.yPos-30}}>{this.props.rule}</div>
+				<div className="myTooltip" style={{
+					left:this.state.xPos,
+					top:this.state.yPos-30,
+					display: !this.props.isJump ? "none":"block"
+				}}>
+					{this.props.rule}
+				</div>
 			</div>
 		);
 	}

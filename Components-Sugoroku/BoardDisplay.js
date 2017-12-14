@@ -33,6 +33,10 @@ class BoardDisplay extends React.Component{
 				isCheckpoint = true;
 			}
 
+			if(rule != 0 && rule != "checkpoint"){
+				isJump = true;
+			}
+
 			boardDisplayArr.push(<BoardSpace
 									key={i}
 									spaceID={spaceKeyArr[i]}
