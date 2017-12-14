@@ -16,7 +16,9 @@ class JSONParser extends React.Component{
         this.changeName = this.changeName.bind(this);
 	}
 
-    changeName(name, url){
+    changeName(e, name, url){
+        e.preventDefault();
+        //e.stopPropagation();
         this.setState({
             currentBoard: name
         },()=>{
@@ -27,7 +29,7 @@ class JSONParser extends React.Component{
 	parser(url){
 		var xmlHttp = new XMLHttpRequest();
 
-    	xmlHttp.onreadystatechange = function() { 
+    	xmlHttp.onreadystatechange = function(e) { 
         	if (xmlHttp.readyState == 4){
         		var XMLResponse = JSON.parse(xmlHttp.responseText);
         		if(xmlHttp.status == 200){
@@ -75,10 +77,30 @@ class JSONParser extends React.Component{
 
                 <div id="dropdownList" className="dropdownContent">
                     <a href="#">--</a>
-                    <a href="#" onClick={()=>this.changeName("Board 1", "Python-Sugoroku/Python-Sugoroku/input_board.json")}>
+
+                    <a href="#" onClick={(e)=>this.changeName(e,"Board 1", "Python-Sugoroku/Python-Sugoroku/input_board.json")}>
                         Board 1
                     </a>
-                    <a href="#">Afrikaans</a>
+
+                    <a href="#" onClick={(e)=>this.changeName(e,"Board 2", "Python-Sugoroku/Python-Sugoroku/ExampleBoards/board1.json")}>
+                        Board 2
+                    </a>
+
+                    <a href="#" onClick={(e)=>this.changeName(e,"Board 3", "Python-Sugoroku/Python-Sugoroku/ExampleBoards/board2.json")}>
+                        Board 3
+                    </a>
+
+                    <a href="#" onClick={(e)=>this.changeName(e,"Board 4", "Python-Sugoroku/Python-Sugoroku/ExampleBoards/board3.json")}>
+                        Board 4
+                    </a>
+
+                    <a href="#" onClick={(e)=>this.changeName(e,"Board 5", "Python-Sugoroku/Python-Sugoroku/ExampleBoards/board4.json")}>
+                        Board 5
+                    </a>
+
+                    <a href="#" onClick={(e)=>this.changeName(e,"Board 6", "Python-Sugoroku/Python-Sugoroku/ExampleBoards/board5.json")}>
+                        Board 6
+                    </a>
                 </div>
 			</div>
 		);

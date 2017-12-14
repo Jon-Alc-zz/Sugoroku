@@ -36,8 +36,8 @@ class SugorokuHome extends React.Component{
 
 				<h1>About this Site</h1>
 				<div className="textBox">
-					These games are played with a 6 sided dice. 
-					example boards were generated with our algorithm below.
+					These games are played with a 6 sided dice.<br></br>
+					Seven example boards were procedurally generated with our algorithm. You can view them below.
 				</div>
 
 				<h1>Example Boards</h1>

@@ -18,7 +18,7 @@ class BoardDisplay extends React.Component{
 
 			if(this.props.getJSONFile["transitions"][spaceKeyArr[i]]["rule"] != null){
 				rule = this.props.getJSONFile["transitions"][spaceKeyArr[i]]["rule"];
-				console.log(rule);
+				//console.log(rule);
 			}
 
 			if(i == 0){

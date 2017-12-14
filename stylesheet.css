@@ -59,6 +59,8 @@ form{
 	z-index: 10;
 	left:9px;
 	top:12px;
+	font-weight:bold;
+	color:#e80b8f;
 	/*top:-20px;*/
 }
 
