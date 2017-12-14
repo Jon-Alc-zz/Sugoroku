@@ -623,7 +623,22 @@ class Player:
                 if self.get_position().get_id() is not "end":
                     self.set_position(self.get_position().get_forward())
 
-            self.get_position().traverse()
+            jump = self.get_position().traverse()
+
+            if jump > 0:
+                for i in range(jump):
+                    if self.get_position().get_id() != "begin" and self.get_position().get_id() != "end":
+                        self.set_position(self.get_position().get_forward())
+                    else:
+                        break
+
+            if jump < 0:
+                for i in range(abs(jump)):
+                    if self.get_position().get_id() != "begin" and self.get_position().get_id() != "end":
+                        self.set_position(self.get_position().get_backward())
+                    else:
+                        break
+
 
         # this board type models Demon Island's Cave maze
         if board_type == "maze":
