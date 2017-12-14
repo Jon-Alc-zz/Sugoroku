@@ -7,14 +7,14 @@ Ryan Jaime
 Jolina Lam
 Ruihong Yu
 
-Currently a very basic implementation demonstrating the main idea of Sugoroku.
+An implementation demonstrating the main idea of Sugoroku.
 """
 import random
 import copy
 
-BOARD_LENGTH = 15
-RANDOM_MULTIPLIER = .3
-LENGTH_MULTIPLIER = .4
+BOARD_LENGTH = 8
+RANDOM_MULTIPLIER = .6 # reward for each random space, for each succeeding random space, smaller reward. Less than 1!
+LENGTH_MULTIPLIER = .5 # changes how closely it adheres to the length
 MAZE_MULTIPLIER = 5
 TURN_COUNT=10
 
@@ -890,7 +890,7 @@ def main():
         next_population=generate_successors(initial_population)
         initial_population=next_population
 
-    game_board=combine_best_subboards(initial_population, random.randint(1,3),random.randint(1,3),random.randint(1,3))
+    game_board=combine_best_subboards(initial_population, random.randint(1,3),random.randint(1,2),random.randint(1,1))
     
     game_board.to_string()
     return game_board
