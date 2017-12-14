@@ -26,7 +26,6 @@ class SugorokuHome extends React.Component{
 	render(){
 		return(
 			<div className="bodyText">
-			<SugorokuForm />
 				<h1>About Sugoroku</h1>
 				<div className="textBox">
 					Sugoroku is a genre of board games with 10 or more tiles that connect to form a completed story.
@@ -37,9 +36,8 @@ class SugorokuHome extends React.Component{
 
 				<h1>About this Site</h1>
 				<div className="textBox">
-					The purpose of this site is to ________________.
 					These games are played with a 6 sided dice. 
-					Click the button below to generate a unique Sugoroku board game.
+					example boards were generated with our algorithm below.
 				</div>
 
 				<h1>Example Boards</h1>
