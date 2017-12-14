@@ -625,6 +625,7 @@ class Player:
 
             jump = self.get_position().traverse()
 
+            """
             if jump > 0:
                 for i in range(jump):
                     if self.get_position().get_id() != "begin" and self.get_position().get_id() != "end":
@@ -638,6 +639,7 @@ class Player:
                         self.set_position(self.get_position().get_backward())
                     else:
                         break
+            """
 
 
         # this board type models Demon Island's Cave maze
